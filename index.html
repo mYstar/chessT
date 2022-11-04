@@ -11,426 +11,416 @@
 
 <body>
 
-  <div id="container">
+  <div id="main">
     
-    <nav>
-      <div id="header">
-        <div id="icon">
-          ChessT
-        </div>
-        <ul id="menu">
-          <li>menu</li>
-          <li>some</li>
-          <li>time</li>
-        </ul>
+    <nav id="header">
+      <div id="icon">
+        ChessT
       </div>
+      <ul id="menu">
+        <li>menu</li>
+        <li>some</li>
+        <li>time</li>
+      </ul>
     </nav>
   
-    <div id="main">
-      
-      <section id="game">
-        <div id="title">
-          Game: <br>
-          Kasparov, G. (2812) vs. <br>
-          Topalov, V. (2700) 
+    <section id="game">
+      <div id="title">
+        Game: <br>
+        Kasparov, G. (2812) vs. <br>
+        Topalov, V. (2700) 
+      </div>
+      <div class="move-gradient" id="gradient-left"></div>
+      <div class="move-gradient" id="gradient-right"></div>
+      <div id="moves">
+        <div>1.</div>
+        <div><span>e4</span></div>
+        <div><span>d6</span></div>
+        <div>2.</div>
+        <div><span>d4</span></div>
+        <div><span>Nf6</span></div>
+        <div>3.</div>
+        <div><span>Nc3</span></div>
+        <div><span>g6</span></div>
+        <div class="sel-row">4.</div>
+        <div class="sel-row">
+          <img id="sel-move" src="./img/sel-move.svg" alt="selected move">
+          <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
+          <span>Be3</span>
         </div>
-        <div class="move-gradient" id="gradient-left"></div>
-        <div class="move-gradient" id="gradient-right"></div>
-        <div id="moves">
-          <div>1.</div>
-          <div><span>e4</span></div>
-          <div><span>d6</span></div>
-          <div>2.</div>
-          <div><span>d4</span></div>
-          <div><span>Nf6</span></div>
-          <div>3.</div>
-          <div><span>Nc3</span></div>
-          <div><span>g6</span></div>
-          <div class="sel-row">4.</div>
-          <div class="sel-row">
-            <img id="sel-move" src="./img/sel-move.svg" alt="selected move">
-            <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
-            <span>Be3</span>
-          </div>
-          <div class="sel-row">
-            <span>Bg7</span>
-          </div>
-          <div>5.</div>
-          <div>
-            <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
-            <span>Qd2</span>
-          </div>
-          <div>
-            <span>c6</span>
-            <img class="comment-small" src="./img/comment_small_right.png" alt="comment">
-          </div>
-          <div>6.</div>
-          <div><span>f3</span></div>
-          <div><span>b5</span></div>
-          <div>7.</div>
-          <div><span>Nge2</span></div>
-          <div><span>Nbd7</span></div>
-          <div>8.</div>
-          <div><span>Bh6</span></div>
-          <div>
-            <span>Bxh6</span>
-            <img class="comment-small" src="./img/comment_small_right.png" alt="comment">
-          </div>
-          <div>9.</div>
-          <div><span>Qxh6</span></div>
-          <div><span>Bb7</span></div>
-          <div>10.</div>
-          <div><span>a3</span></div>
-          <div><span>e5</span></div>
-          <div >11.</div>
-          <div>
-            <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
-            <span>O-O-O</span>
-          </div>
-          <div><span>Qe7</span></div>
-          <div>12.</div>
-          <div><span>Kb1</span></div>
-          <div><span>a6</span></div>
+        <div class="sel-row">
+          <span>Bg7</span>
         </div>
-      </section>
-    
-      <section>
-        <div id="board">
-            <div class="field light">
-                <div id="A8">
-                    <p class="over">A</p>
-                    <p class="left">8</p>
-                    <img src="./img/rook_b.svg" alt="Rook black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="B8">
-                    <p class="over">B</p>
-                    <img src="./img/knight_b.svg" alt="Knight black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="C8">
-                    <p class="over">C</p>
-                    <img src="./img/bishop_b.svg" alt="Bishop black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="D8">
-                    <p class="over">D</p>
-                    <img src="./img/king_b.svg" alt="King black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="E8">
-                    <p class="over">E</p>
-                    <img src="./img/queen_b.svg" alt="Queen black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="F8">
-                    <p class="over">F</p>
-                    <img src="./img/bishop_b.svg" alt="Bishop black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="G8">
-                    <p class="over">G</p>
-                    <img src="./img/knight_b.svg" alt="Knight black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="H8">
-                    <p class="over">H</p>
-                    <p class="right">8</p>
-                    <img src="img/rook_b.svg" alt="Rook black" />
-                </div>
-            </div>
-    
-            <div class="field">
-                <div id="A7">
-                    <p class="left">7</p>
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="B7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="C7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="D7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="E7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="F7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="G7">
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="H7">
-                    <p class="right">7</p>
-                    <img src="./img/pawn_b.svg" alt="Pawn black" />
-                </div>
-            </div>
-    
-            <div class="field light">
-                <div id="A6">
-                    <p class="left">6</p>
-                </div>
-            </div>
-            <div class="field">
-                <div id="B6"></div>
-            </div>
-            <div class="field light">
-                <div id="C6"></div>
-            </div>
-            <div class="field">
-                <div id="D6"></div>
-            </div>
-            <div class="field light">
-                <div id="E6"></div>
-            </div>
-            <div class="field">
-                <div id="F6"></div>
-            </div>
-            <div class="field light">
-                <div id="G6"></div>
-            </div>
-            <div class="field">
-                <div id="H6">
-                    <p class="right">6</p>
-                </div>
-            </div>
-    
-            <div class="field">
-                <div id="A5">
-                    <p class="left">5</p>
-                </div>
-            </div>
-            <div class="field light">
-                <div id="B5"></div>
-            </div>
-            <div class="field">
-                <div id="C5"></div>
-            </div>
-            <div class="field light">
-                <div id="D5"></div>
-            </div>
-            <div class="field">
-                <div id="E5"></div>
-            </div>
-            <div class="field light">
-                <div id="F5"></div>
-            </div>
-            <div class="field">
-                <div id="G5"></div>
-            </div>
-            <div class="field light">
-                <div id="H5">
-                    <p class="right">5</p>
-                </div>
-            </div>
-    
-            <div class="field light">
-                <div id="A4">
-                    <p class="left">4</p>
-                </div>
-            </div>
-            <div class="field">
-                <div id="B4"></div>
-            </div>
-            <div class="field light">
-                <div id="C4"></div>
-            </div>
-            <div class="field">
-                <div id="D4"></div>
-            </div>
-            <div class="field light">
-                <div id="E4"></div>
-            </div>
-            <div class="field">
-                <div id="F4"></div>
-            </div>
-            <div class="field light">
-                <div id="G4"></div>
-            </div>
-            <div class="field">
-                <div id="H4">
-                    <p class="right">4</p>
-                </div>
-            </div>
-    
-            <div class="field">
-                <div id="A3">
-                    <p class="left">3</p>
-                </div>
-            </div>
-            <div class="field light">
-                <div id="B3"></div>
-            </div>
-            <div class="field">
-                <div id="C3"></div>
-            </div>
-            <div class="field light">
-                <div id="D3"></div>
-            </div>
-            <div class="field">
-                <div id="E3"></div>
-            </div>
-            <div class="field light">
-                <div id="F3"></div>
-            </div>
-            <div class="field">
-                <div id="G3"></div>
-            </div>
-            <div class="field light">
-                <div id="H3">
-                    <p class="right">3</p>
-                </div>
-            </div>
-    
-            <div class="field light">
-                <div id="A2">
-                    <p class="left">2</p>
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="B2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="C2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="D2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="E2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="F2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="G2">
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="H2">
-                    <p class="right">2</p>
-                    <img src="./img/pawn_w.svg" alt="Pawn white" />
-                </div>
-            </div>
-    
-            <div class="field">
-                <div id="A1">
-                    <p class="under">A</p>
-                    <p class="left">1</p>
-                    <img src="./img/rook_w.svg" alt="Rook white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="B1">
-                    <p class="under">B</p>
-                    <img src="./img/knight_w.svg" alt="Knight white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="C1">
-                    <p class="under">C</p>
-                    <img src="./img/bishop_w.svg" alt="Bishop white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="D1">
-                    <p class="under">D</p>
-                    <img src="./img/king_w.svg" alt="King white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="E1">
-                    <p class="under">E</p>
-                    <img src="./img/queen_w.svg" alt="Queen white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="F1">
-                    <p class="under">F</p>
-                    <img src="./img/bishop_w.svg" alt="Bishop white" />
-                </div>
-            </div>
-            <div class="field">
-                <div id="G1">
-                    <p class="under">G</p>
-                    <img src="./img/knight_w.svg" alt="Knight white" />
-                </div>
-            </div>
-            <div class="field light">
-                <div id="H1">
-                    <p class="under">H</p>
-                    <p class="right">1</p>
-                    <img src="./img/rook_w.svg" alt="Rook white" />
-                </div>
-            </div>
+        <div>5.</div>
+        <div>
+          <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
+          <span>Qd2</span>
         </div>
-      </section>
+        <div>
+          <span>c6</span>
+          <img class="comment-small" src="./img/comment_small_right.png" alt="comment">
+        </div>
+        <div>6.</div>
+        <div><span>f3</span></div>
+        <div><span>b5</span></div>
+        <div>7.</div>
+        <div><span>Nge2</span></div>
+        <div><span>Nbd7</span></div>
+        <div>8.</div>
+        <div><span>Bh6</span></div>
+        <div>
+          <span>Bxh6</span>
+          <img class="comment-small" src="./img/comment_small_right.png" alt="comment">
+        </div>
+        <div>9.</div>
+        <div><span>Qxh6</span></div>
+        <div><span>Bb7</span></div>
+        <div>10.</div>
+        <div><span>a3</span></div>
+        <div><span>e5</span></div>
+        <div >11.</div>
+        <div>
+          <img class="comment-small" src="./img/comment_small_left.png" alt="comment">
+          <span>O-O-O</span>
+        </div>
+        <div><span>Qe7</span></div>
+        <div>12.</div>
+        <div><span>Kb1</span></div>
+        <div><span>a6</span></div>
+      </div>
+    </section>
   
-      <section id="comment-section">
-        <div id="comments">
-          <div id="highlight">
-            <img src="./img/comment_bg_white.png" alt="comment-section">
+    <section id="board">
+      <div class="field light">
+          <div id="A8">
+              <p class="over">A</p>
+              <p class="left">8</p>
+              <img src="./img/rook_b.svg" alt="Rook black" />
           </div>
-          <div id="text-section">
-            <div class="comment">
-              <div class="writer">
-                <img class="avatar" src="./img/avatar.svg" alt="Avatar">
-                Kasparov:
-              </div>
-              <div class="comment">
-                As far as I know, Black usually plays c6 and b5 before the move Bg7, but I don't think that this shift changes something seriously.  
-              </div>
-            <div class="comment">
-              
-              <div class="writer">
-                <img class="avatar" src="./img/avatar.svg" alt="Avatar">
-                Kasparov:
-              </div>
-              <div class="comment">
-                As far as I know, Black usually plays c6 and b5 before the move Bg7, but I don't think that this shift changes something seriously.  
-              </div>
-            </div>
+      </div>
+      <div class="field">
+          <div id="B8">
+              <p class="over">B</p>
+              <img src="./img/knight_b.svg" alt="Knight black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="C8">
+              <p class="over">C</p>
+              <img src="./img/bishop_b.svg" alt="Bishop black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="D8">
+              <p class="over">D</p>
+              <img src="./img/king_b.svg" alt="King black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="E8">
+              <p class="over">E</p>
+              <img src="./img/queen_b.svg" alt="Queen black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="F8">
+              <p class="over">F</p>
+              <img src="./img/bishop_b.svg" alt="Bishop black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="G8">
+              <p class="over">G</p>
+              <img src="./img/knight_b.svg" alt="Knight black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="H8">
+              <p class="over">H</p>
+              <p class="right">8</p>
+              <img src="img/rook_b.svg" alt="Rook black" />
+          </div>
+      </div>
+
+      <div class="field">
+          <div id="A7">
+              <p class="left">7</p>
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="B7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="C7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="D7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="E7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="F7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="G7">
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="H7">
+              <p class="right">7</p>
+              <img src="./img/pawn_b.svg" alt="Pawn black" />
+          </div>
+      </div>
+
+      <div class="field light">
+          <div id="A6">
+              <p class="left">6</p>
+          </div>
+      </div>
+      <div class="field">
+          <div id="B6"></div>
+      </div>
+      <div class="field light">
+          <div id="C6"></div>
+      </div>
+      <div class="field">
+          <div id="D6"></div>
+      </div>
+      <div class="field light">
+          <div id="E6"></div>
+      </div>
+      <div class="field">
+          <div id="F6"></div>
+      </div>
+      <div class="field light">
+          <div id="G6"></div>
+      </div>
+      <div class="field">
+          <div id="H6">
+              <p class="right">6</p>
+          </div>
+      </div>
+
+      <div class="field">
+          <div id="A5">
+              <p class="left">5</p>
+          </div>
+      </div>
+      <div class="field light">
+          <div id="B5"></div>
+      </div>
+      <div class="field">
+          <div id="C5"></div>
+      </div>
+      <div class="field light">
+          <div id="D5"></div>
+      </div>
+      <div class="field">
+          <div id="E5"></div>
+      </div>
+      <div class="field light">
+          <div id="F5"></div>
+      </div>
+      <div class="field">
+          <div id="G5"></div>
+      </div>
+      <div class="field light">
+          <div id="H5">
+              <p class="right">5</p>
+          </div>
+      </div>
+
+      <div class="field light">
+          <div id="A4">
+              <p class="left">4</p>
+          </div>
+      </div>
+      <div class="field">
+          <div id="B4"></div>
+      </div>
+      <div class="field light">
+          <div id="C4"></div>
+      </div>
+      <div class="field">
+          <div id="D4"></div>
+      </div>
+      <div class="field light">
+          <div id="E4"></div>
+      </div>
+      <div class="field">
+          <div id="F4"></div>
+      </div>
+      <div class="field light">
+          <div id="G4"></div>
+      </div>
+      <div class="field">
+          <div id="H4">
+              <p class="right">4</p>
+          </div>
+      </div>
+
+      <div class="field">
+          <div id="A3">
+              <p class="left">3</p>
+          </div>
+      </div>
+      <div class="field light">
+          <div id="B3"></div>
+      </div>
+      <div class="field">
+          <div id="C3"></div>
+      </div>
+      <div class="field light">
+          <div id="D3"></div>
+      </div>
+      <div class="field">
+          <div id="E3"></div>
+      </div>
+      <div class="field light">
+          <div id="F3"></div>
+      </div>
+      <div class="field">
+          <div id="G3"></div>
+      </div>
+      <div class="field light">
+          <div id="H3">
+              <p class="right">3</p>
+          </div>
+      </div>
+
+      <div class="field light">
+          <div id="A2">
+              <p class="left">2</p>
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="B2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="C2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="D2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="E2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="F2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="G2">
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="H2">
+              <p class="right">2</p>
+              <img src="./img/pawn_w.svg" alt="Pawn white" />
+          </div>
+      </div>
+
+      <div class="field">
+          <div id="A1">
+              <p class="under">A</p>
+              <p class="left">1</p>
+              <img src="./img/rook_w.svg" alt="Rook white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="B1">
+              <p class="under">B</p>
+              <img src="./img/knight_w.svg" alt="Knight white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="C1">
+              <p class="under">C</p>
+              <img src="./img/bishop_w.svg" alt="Bishop white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="D1">
+              <p class="under">D</p>
+              <img src="./img/king_w.svg" alt="King white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="E1">
+              <p class="under">E</p>
+              <img src="./img/queen_w.svg" alt="Queen white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="F1">
+              <p class="under">F</p>
+              <img src="./img/bishop_w.svg" alt="Bishop white" />
+          </div>
+      </div>
+      <div class="field">
+          <div id="G1">
+              <p class="under">G</p>
+              <img src="./img/knight_w.svg" alt="Knight white" />
+          </div>
+      </div>
+      <div class="field light">
+          <div id="H1">
+              <p class="under">H</p>
+              <p class="right">1</p>
+              <img src="./img/rook_w.svg" alt="Rook white" />
+          </div>
+      </div>
+    </section>
+
+    <section id="comments">
+      <div id="highlight">
+        <img src="./img/comment_bg_white.png" alt="comment-section">
+      </div>
+      <div id="text-section">
+        <div class="comment">
+          <div class="writer">
+            <img class="avatar" src="./img/avatar.svg" alt="Avatar">
+            Kasparov:
+          </div>
+          <div class="comment">
+            As far as I know, Black usually plays c6 and b5 before the move Bg7, but I don't think that this shift changes something seriously.  
+          </div>
+        <div class="comment">
+          
+          <div class="writer">
+            <img class="avatar" src="./img/avatar.svg" alt="Avatar">
+            Kasparov:
+          </div>
+          <div class="comment">
+            As far as I know, Black usually plays c6 and b5 before the move Bg7, but I don't think that this shift changes something seriously.  
           </div>
         </div>
-      </section>
-
-    </div> <!-- main -->
+      </div>
+    </section>
   </div>
 
 </body>
