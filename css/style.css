@@ -11,6 +11,7 @@ html {
   padding: 0;
 
   --header-height: 50px;
+  --game-title-height: 106px;
   --comment-height: 135px;
   --grid-gaps: 15px;
 
@@ -142,6 +143,7 @@ body {
 #game #title {
   position: relative;
   z-index: 1;
+  height: var(--game-title-height);
 
   font-family: 'Tinos', serif;
   font-size: 2rem;
@@ -175,6 +177,7 @@ body {
   grid-auto-flow: row;
   grid-template-columns: 14% 43% 43%;
   overflow: scroll;
+  max-height: calc(100% - var(--game-title-height));
 
   font-size: 2.4rem;
   line-height: 1.5;
