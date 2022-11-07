@@ -1,0 +1,29 @@
+{
+  "name": "chesst",
+  "version": "1.0.0",
+  "description": "A web-app for commenting on chess games.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mYstar/chessT.git"
+  },
+  "keywords": [
+    "chess",
+    "comment"
+  ],
+  "author": "Eric Starke",
+  "license": "CC-BY-3.0-DE",
+  "bugs": {
+    "url": "https://github.com/mYstar/chessT/issues"
+  },
+  "homepage": "https://github.com/mYstar/chessT#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.56.0"
+  }
+}
