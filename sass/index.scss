@@ -79,7 +79,7 @@ body {
   background: white;
 
   padding: 0 22px;
-  border-bottom: 2px solid $highlight_strong;
+  border-bottom: 2px solid $highlight_100;
   box-shadow: 0 2px 4px $shadow;
 }
 
@@ -116,7 +116,7 @@ body {
 }
 
 #header #menu li:hover {
-  color: $highlight_strong;
+  color: $highlight_100;
 }
 
 #game {
@@ -138,7 +138,7 @@ body {
   line-height: 1.2em;
 
   padding: 0.8em;
-  border-bottom: 2px solid $highlight_strong;
+  border-bottom: 2px solid $highlight_100;
   background-color: white;
 }
 
@@ -198,7 +198,7 @@ body {
     font-size: 2rem;
 
     padding: 0;
-    border-bottom: 2px solid $highlight_strong;
+    border-bottom: 2px solid $highlight_100;
   }
 
   #game #moves > div {
@@ -218,7 +218,7 @@ body {
     top: 0;
 
     background: white;
-    border-bottom: 2px solid $highlight_strong;
+    border-bottom: 2px solid $highlight_100;
   }
 
   #game #gradient-left {
@@ -269,9 +269,9 @@ body {
 }
 
 #game .sel-row {
-  background-color: $highlight_weak;
-  border-bottom: 1px solid $highlight_strong;
-  border-top: 1px solid $highlight_strong;
+  background-color: $highlight_40;
+  border-bottom: 1px solid $highlight_100;
+  border-top: 1px solid $highlight_100;
 }
 
 #game span {
@@ -298,8 +298,8 @@ body {
   #game .sel-row {
     border-bottom: none;
     border-top: none;
-    border-left: 1px solid $highlight_strong;
-    border-right: 1px solid $highlight_strong;
+    border-left: 1px solid $highlight_100;
+    border-right: 1px solid $highlight_100;
   }
 
   #game #sel-move {
@@ -415,8 +415,8 @@ body {
 #comments #highlight {
   position: relative;
   width: 100px;
-  background-color: $highlight_weak;
-  border-right: 2px solid $highlight_strong;
+  background-color: $highlight_60;
+  border-right: 2px solid $highlight_100;
 }
 #comments #highlight img {
   position: absolute;
