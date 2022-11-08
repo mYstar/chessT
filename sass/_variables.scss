@@ -1,0 +1,24 @@
+// media-query values
+$tablet-max-width: 910px;
+
+// sizes for desktop version
+$desktop-header-height: 50px;
+$desktop-game-title-height: 106px;
+$desktop-comment-height: 135px;
+$desktop-grid-gaps: 15px;
+
+// sizes for tablet version
+$tablet-header-height: 40px;
+$tablet-game-height: 120px;
+$tablet-comment-height: 145px;
+$tablet-grid-gaps: 10px;
+
+// colors
+$background: #D2D2D2;
+$highlight_strong: #57B5FF;
+$highlight_weak: #C5E5FF;
+$field_light: #B58863;
+$field_dark: #F0D9B5;
+$shadow: rgba(0, 0, 0, 0.25);
+$game-gradient-from: rgba(120, 120, 120, 1);
+$game-gradient-to: rgba(255,255,255,0);

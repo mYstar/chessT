@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Questrial:400');
 @import url('https://fonts.googleapis.com/css?family=Tinos:400,700');
 
-@debug "testmessage";
+@import 'variables';
 
 * {
   box-sizing: border-box;
@@ -11,21 +11,6 @@ html {
   font-size: 62.5%;
   margin: 0;
   padding: 0;
-
-  --header-height: 50px;
-  --game-title-height: 106px;
-  --comment-height: 135px;
-  --grid-gaps: 15px;
-
-}
-
-@media only screen and (max-width: 910px) {
-  html {
-    --header-height: 40px;
-    --game-height: 120px;
-    --comment-height: 145px;
-    --grid-gaps: 10px;
-  }
 }
 
 body {
@@ -34,11 +19,11 @@ body {
   margin: 0;
   padding: 0;
   
-  background: #D2D2D2;
+  background: $background;
   font-family: 'Questrial', sans-serif;
   font-weight: 400;
   line-height: 1.75;
-  color: #000000;
+  color: black;
 }
 
 #container {
@@ -53,20 +38,20 @@ body {
     "comments comments";
   grid-template-columns: 300px auto;
   grid-template-rows:
-    var(--header-height)
+    $desktop-header-height
     minmax(auto, calc(100% 
-      - var(--header-height) 
-      - var(--comment-height) 
-      - 2 * var(--grid-gaps)))
-    minmax(var(--comment-height), auto);
-  grid-row-gap: var(--grid-gaps);
+      - $desktop-header-height
+      - $desktop-comment-height
+      - 2 * $desktop-grid-gaps))
+    minmax($desktop-comment-height, auto);
+  grid-row-gap: $desktop-grid-gaps;
   height: 100%;
   max-width: 1060px;
 
   margin: 0 auto;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #main {
     grid-template-areas:
       "header"
@@ -75,10 +60,10 @@ body {
       "comments";
     grid-template-columns: 100%;
     grid-template-rows:
-      var(--header-height)
-      var(--game-height)
+      $tablet-header-height
+      $tablet-game-height
       auto
-      var(--comment-height);
+      $tablet-comment-height;
   }
 }
 
@@ -89,13 +74,13 @@ body {
   flex-direction: row;
   align-items: center;
   width: 100%;
-  height: var(--header-height);
+  height: 100%;
 
-  background: #fff;
+  background: white;
 
   padding: 0 22px;
-  border-bottom: 2px solid #57B5FF;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid $highlight_strong;
+  box-shadow: 0 2px 4px $shadow;
 }
 
 #header #icon {
@@ -124,28 +109,28 @@ body {
   text-decoration: underline;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #header #menu li {
     padding: 2em;
   }
 }
 
 #header #menu li:hover {
-  color: #57B5FF;
+  color: $highlight_strong;
 }
 
 #game {
   grid-area: game;
   position: relative;
 
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  box-shadow: 0 2px 4px $shadow;
 }
 
 #game #title {
   position: relative;
   z-index: 1;
-  height: var(--game-title-height);
+  height: $desktop-game-title-height;
 
   font-family: 'Tinos', serif;
   font-size: 2rem;
@@ -153,13 +138,13 @@ body {
   line-height: 1.2em;
 
   padding: 0.8em;
-  border-bottom: 2px solid #57B5FF;
-  background-color: #fff;
+  border-bottom: 2px solid $highlight_strong;
+  background-color: white;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #game {
-    height: var(--game-height);
+    height: $tablet-game-height;
   }
 
   #game #title {
@@ -179,7 +164,7 @@ body {
   grid-auto-flow: row;
   grid-template-columns: 14% 43% 43%;
   overflow: scroll;
-  max-height: calc(100% - var(--game-title-height));
+  max-height: calc(100% - $desktop-game-title-height);
 
   font-size: 2.4rem;
   line-height: 1.5;
@@ -199,10 +184,11 @@ body {
   text-align: left;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #game #moves {
     width: 100%;
     height: 75%;
+    max-height: 75%;
     grid-auto-flow: column;
     grid-template-columns: repeat(auto-fill, 5.6em);
     grid-auto-columns: 5.6em;
@@ -212,7 +198,7 @@ body {
     font-size: 2rem;
 
     padding: 0;
-    border-bottom: 2px solid #57B5FF;
+    border-bottom: 2px solid $highlight_strong;
   }
 
   #game #moves > div {
@@ -231,16 +217,16 @@ body {
     width: 48px;
     top: 0;
 
-    background: #fff;
-    border-bottom: 2px solid #57B5FF;
+    background: white;
+    border-bottom: 2px solid $highlight_strong;
   }
 
   #game #gradient-left {
     left: 0;
     background: linear-gradient(
       90deg,
-      rgba(120, 120, 120, 1) 0%,
-      rgba(255,255,255,0) 100%
+      $game-gradient-from 0%,
+      $game-gradient-to 100%
       );
   }
 
@@ -248,8 +234,8 @@ body {
     right: 0;
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(120,120,120,1) 100%
+      $game-gradient-to 0%,
+      $game-gradient-from 100%
       );
   }
 }
@@ -268,7 +254,7 @@ body {
   right: 0.7em;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #game #moves .comment-small {
     width: 0.9em;
   }
@@ -283,9 +269,9 @@ body {
 }
 
 #game .sel-row {
-  background-color: #C5E5FF;
-  border-bottom: 1px solid #57B5FF;
-  border-top: 1px solid #57B5FF;
+  background-color: $highlight_weak;
+  border-bottom: 1px solid $highlight_strong;
+  border-top: 1px solid $highlight_strong;
 }
 
 #game span {
@@ -308,12 +294,12 @@ body {
   left: 0.3em;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #game .sel-row {
     border-bottom: none;
     border-top: none;
-    border-left: 1px solid #57B5FF;
-    border-right: 1px solid #57B5FF;
+    border-left: 1px solid $highlight_strong;
+    border-right: 1px solid $highlight_strong;
   }
 
   #game #sel-move {
@@ -337,16 +323,16 @@ body {
   padding: 3.2rem;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #board {
     /* TODO: vw -> % */
     width: min(100vw, calc(100vh 
-      - var(--header-height) 
-      - var(--game-height)
-      - var(--comment-height)
-      - var(--grid-gaps) * 3
+      - $tablet-header-height 
+      - $tablet-game-height
+      - $tablet-comment-height
+      - $tablet-grid-gaps * 3
     ));
-    margin: var(--grid-gaps) auto;
+    margin: $tablet-grid-gaps auto;
   }
 }
 
@@ -354,11 +340,11 @@ body {
     position: relative;
     display: block;
     padding: 50% 0;
-    background-color: #b58863;
+    background-color: $field_dark;
 }
 
 .light {
-    background-color: #f0d9b5;
+    background-color: $field_light;
 }
 
 .field div {
@@ -384,7 +370,7 @@ body {
     line-height: 1;
     color: white;
 
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+    text-shadow: 1px 1px 2px $shadow;
 }
 .field .over {
     top: 0;
@@ -415,13 +401,13 @@ body {
   max-height: 100%;
 
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 4px $shadow;
 }
 
-@media only screen and (max-width: 910px) {
+@media only screen and (max-width: $tablet-max-width) {
   #comments {
-    min-height: var(--comment-height);
-    max-height: var(--comment-height);
+    min-height: $tablet-comment-height;
+    // max-height: var(--comment-height);
     /* TODO: fix this with grid */
   }
 }
@@ -429,8 +415,8 @@ body {
 #comments #highlight {
   position: relative;
   width: 100px;
-  background-color: #8ACBFF;
-  border-right: 2px solid #57b5FF;
+  background-color: $highlight_weak;
+  border-right: 2px solid $highlight_strong;
 }
 #comments #highlight img {
   position: absolute;
