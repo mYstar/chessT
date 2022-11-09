@@ -1,0 +1,80 @@
+#board {
+  grid-area: board;
+
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+
+  margin: auto;
+  padding: 3.2rem;
+}
+
+@media only screen and (max-width: $tablet-max-width) {
+  #board {
+    /* TODO: vw -> % */
+    width: min(100vw, calc(100vh 
+      - $tablet-header-height 
+      - $tablet-game-height
+      - $tablet-comment-height
+      - $tablet-grid-gaps * 3
+    ));
+    margin: $tablet-grid-gaps auto;
+  }
+}
+
+.field {
+    position: relative;
+    display: block;
+    padding: 50% 0;
+    background-color: $field_dark;
+}
+
+.light {
+    background-color: $field_light;
+}
+
+.field div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.field img {
+    width: 95%;
+    height: 95%;
+}
+
+.field p {
+    position: absolute;
+    margin: 0;
+    font-size: 3rem;
+    line-height: 1;
+    color: white;
+
+    text-shadow: 1px 1px 2px $shadow;
+}
+.field .over {
+    top: 0;
+    transform: translateY(-100%);
+}
+
+.field .under {
+    bottom: 0;
+    transform: translateY(100%);
+}
+
+.field .left {
+    left: -3px;
+    transform: translateX(-100%);
+}
+
+.field .right {
+    right: -3px;
+    transform: translateX(100%);
+}
