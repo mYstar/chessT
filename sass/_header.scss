@@ -12,40 +12,42 @@
   padding: 0 22px;
   border-bottom: 2px solid $highlight_100;
   box-shadow: 0 2px 4px $shadow;
-}
 
-#header #icon {
-  flex-basis: 50%;
+  > #icon {
+    flex-basis: 50%;
 
-  font-size: 3.2rem;
-  line-height: 1;
-}
+    font-size: 3.2rem;
+    line-height: 1;
+  }
 
-#header #menu {
-  flex-basis: 50%;
-  justify-self: flex-end;
+  > #menu {
+    flex-basis: 50%;
+    justify-self: flex-end;
 
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 
-#header #menu li {
-  font-size: 2rem;
-  padding: 0 3em;
+    > li {
+      font-size: 2rem;
+      padding: 0 3em;
 
-  text-decoration: underline;
-}
+      text-decoration: underline;
 
-@media only screen and (max-width: $tablet-max-width) {
-  #header #menu li {
-    padding: 2em;
+      &:hover {
+        color: $highlight_100;
+      }
+    }
   }
 }
 
-#header #menu li:hover {
-  color: $highlight_100;
+
+@media only screen and (max-width: $tablet-max-width) {
+
+  #header #menu li {
+    padding: 2em;
+  }
 }

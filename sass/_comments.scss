@@ -8,6 +8,36 @@
 
   background-color: #fff;
   box-shadow: 0 2px 4px $shadow;
+
+  > #highlight {
+    position: relative;
+    width: 100px;
+    background-color: $highlight_60;
+    border-right: 2px solid $highlight_100;
+
+    > img {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  > #text-section {
+    overflow: scroll;
+    font-family: "Tinos", serif;
+    font-size: 2rem;
+
+    padding: 0.6em;
+
+    > .writer {
+      font-weight: 700;
+
+      > .avatar {
+        vertical-align: text-bottom;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: $tablet-max-width) {
@@ -18,31 +48,3 @@
   }
 }
 
-#comments #highlight {
-  position: relative;
-  width: 100px;
-  background-color: $highlight_60;
-  border-right: 2px solid $highlight_100;
-}
-#comments #highlight img {
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-#comments #text-section {
-  overflow: scroll;
-  font-family: "Tinos", serif;
-  font-size: 2rem;
-
-  padding: 0.6em;
-}
-
-#comments .avatar {
-  vertical-align: text-bottom;
-}
-
-#comments .writer {
-  font-weight: 700;
-}

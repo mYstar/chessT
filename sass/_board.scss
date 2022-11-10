@@ -8,6 +8,66 @@
 
   margin: auto;
   padding: 3.2rem;
+
+  > .field {
+      position: relative;
+      display: block;
+      padding: 50% 0;
+
+    > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+      > img {
+          width: 95%;
+          height: 95%;
+      }
+
+      > .over, .under, .left, .right {
+          position: absolute;
+          margin: 0;
+          font-size: 3rem;
+          line-height: 1;
+          color: white;
+
+          text-shadow: 1px 1px 2px $shadow;
+      }
+
+      > .over {
+          top: 0;
+          transform: translateY(-100%);
+      }
+
+      > .under {
+          bottom: 0;
+          transform: translateY(100%);
+      }
+
+      > .left {
+          left: -3px;
+          transform: translateX(-100%);
+      }
+
+      > .right {
+          right: -3px;
+          transform: translateX(100%);
+      }
+    }
+  }
+
+  > .dark {
+      background-color: $field_dark;
+  }
+
+  > .light {
+      background-color: $field_light;
+  }
 }
 
 @media only screen and (max-width: $tablet-max-width) {
@@ -23,58 +83,4 @@
   }
 }
 
-.field {
-    position: relative;
-    display: block;
-    padding: 50% 0;
-    background-color: $field_dark;
-}
 
-.light {
-    background-color: $field_light;
-}
-
-.field div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.field img {
-    width: 95%;
-    height: 95%;
-}
-
-.field p {
-    position: absolute;
-    margin: 0;
-    font-size: 3rem;
-    line-height: 1;
-    color: white;
-
-    text-shadow: 1px 1px 2px $shadow;
-}
-.field .over {
-    top: 0;
-    transform: translateY(-100%);
-}
-
-.field .under {
-    bottom: 0;
-    transform: translateY(100%);
-}
-
-.field .left {
-    left: -3px;
-    transform: translateX(-100%);
-}
-
-.field .right {
-    right: -3px;
-    transform: translateX(100%);
-}
