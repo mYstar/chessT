@@ -4,9 +4,8 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  width: 100%;
 
-  margin: auto;
+  //margin: auto;
   padding: 3.2rem;
 
   > .field {
@@ -79,7 +78,7 @@
       - $tablet-comment-height
       - $tablet-grid-gaps * 3
     ));
-    margin: $tablet-grid-gaps auto;
+    margin: 0 auto;
   }
 }
 

@@ -60,6 +60,7 @@ body {
       $tablet-game-height
       auto
       $tablet-comment-height;
+    grid-row-gap: $tablet-grid-gaps;
   }
 }
 

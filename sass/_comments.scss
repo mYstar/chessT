@@ -43,7 +43,7 @@
 @media only screen and (max-width: $tablet-max-width) {
   #comments {
     min-height: $tablet-comment-height;
-    // max-height: var(--comment-height);
+    //max-height: $tablet-comment-height;
     /* TODO: fix this with grid */
   }
 }
