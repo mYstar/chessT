@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  
+  background: $background;
+  font-family: 'Questrial', sans-serif;
+  font-weight: 400;
+  line-height: 1.75;
+  color: black;
+}
+
+#main {
+  display: grid;
+  grid-template-areas:
+   "header header"
+    "game board"
+    "comments comments";
+  grid-template-columns: 300px auto;
+  grid-template-rows:
+    $desktop-header-height
+    minmax(auto, calc(100% 
+      - $desktop-header-height
+      - $desktop-comment-height
+      - 2 * $desktop-grid-gaps))
+    minmax($desktop-comment-height, auto);
+  grid-row-gap: $desktop-grid-gaps;
+  height: 100%;
+  max-width: 1060px;
+
+  margin: 0 auto;
+
+  @include tablet-size {
+    grid-template-areas:
+      "header"
+      "game"
+      "board"
+      "comments";
+    grid-template-columns: 100%;
+    grid-template-rows:
+      $tablet-header-height
+      $tablet-game-height
+      auto
+      $tablet-comment-height;
+    grid-row-gap: $tablet-grid-gaps;
+  }
+}

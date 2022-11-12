@@ -8,6 +8,17 @@
   //margin: auto;
   padding: 3.2rem;
 
+  @include tablet-size {
+    /* TODO: vw -> % */
+    width: min(100vw, calc(100vh 
+      - $tablet-header-height 
+      - $tablet-game-height
+      - $tablet-comment-height
+      - $tablet-grid-gaps * 3
+    ));
+    margin: 0 auto;
+  }
+
   > .field {
       position: relative;
       display: block;
@@ -68,18 +79,3 @@
       background-color: $field_light;
   }
 }
-
-@media only screen and (max-width: $tablet-max-width) {
-  #board {
-    /* TODO: vw -> % */
-    width: min(100vw, calc(100vh 
-      - $tablet-header-height 
-      - $tablet-game-height
-      - $tablet-comment-height
-      - $tablet-grid-gaps * 3
-    ));
-    margin: 0 auto;
-  }
-}
-
-

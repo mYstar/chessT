@@ -37,17 +37,13 @@
 
       text-decoration: underline;
 
+      @include tablet-size {
+        padding: 2em;
+      }
+
       &:hover {
         color: $highlight_100;
       }
     }
-  }
-}
-
-
-@media only screen and (max-width: $tablet-max-width) {
-
-  #header #menu li {
-    padding: 2em;
   }
 }
