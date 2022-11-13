@@ -1,5 +1,13 @@
-@mixin tablet-size {
-  @media only screen and (max-width: $tablet-max-width) {
+// media-query values
+$breakpoints: ( //these define the max-width of a medium
+  "small": 600px,
+  "medium": 910px,
+);
+
+@mixin device($key) {
+  $limit: map-get($breakpoints, $key);
+
+  @media (max-width: $limit) {
     @content
   }
 }

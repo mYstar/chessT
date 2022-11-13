@@ -8,7 +8,7 @@
   //margin: auto;
   padding: 3.2rem;
 
-  @include tablet-size {
+  @include device("medium") {
     /* TODO: vw -> % */
     width: min(100vw, calc(100vh 
       - $tablet-header-height 

@@ -9,7 +9,7 @@
   background-color: #fff;
   box-shadow: 0 2px 4px $shadow;
 
-  @include tablet-size {
+  @include device("medium") {
     min-height: $tablet-comment-height;
     //max-height: $tablet-comment-height;
     /* TODO: fix this with grid */

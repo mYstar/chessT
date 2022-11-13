@@ -37,7 +37,7 @@
 
       text-decoration: underline;
 
-      @include tablet-size {
+      @include device("medium") {
         padding: 2em;
       }
 

@@ -41,7 +41,7 @@ body {
 
   margin: 0 auto;
 
-  @include tablet-size {
+  @include device("medium") {
     grid-template-areas:
       "header"
       "game"

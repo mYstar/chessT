@@ -4,7 +4,7 @@
   background-color: white;
   box-shadow: 0 2px 4px $shadow;
 
-  @include tablet-size {
+  @include device("medium") {
     position: relative;
     height: $tablet-game-height;
   }
@@ -22,7 +22,7 @@
     background-color: white;
 
 
-    @include tablet-size {
+    @include device("medium") {
       position: relative;
       z-index: 1;
       height: 25%;
@@ -36,7 +36,7 @@
     }
   }
 
-  @include tablet-size {
+  @include device("medium") {
     // mobile gradients
     > #gradient-left, #gradient-right {
       position: absolute;
@@ -107,7 +107,7 @@
     }
   }
 
-  @include tablet-size {
+  @include device("medium") {
     width: 100%;
     height: 75%;
     max-height: 75%;
@@ -159,7 +159,7 @@
       z-index: 0;
     }
 
-    @include tablet-size {
+    @include device("medium") {
       border-bottom: none;
       border-top: none;
       border-left: 1px solid $highlight_100;
