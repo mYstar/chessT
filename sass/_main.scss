@@ -30,10 +30,10 @@ body {
   grid-template-columns: 300px auto;
   grid-template-rows:
     $desktop-header-height
-    minmax(auto, calc(100% 
-      - $desktop-header-height
+    minmax(auto, calc(100%
+      - $desktop-fixed-height
       - $desktop-comment-height
-      - 2 * $desktop-grid-gaps))
+      ))
     minmax($desktop-comment-height, auto);
   grid-row-gap: $desktop-grid-gaps;
   height: 100%;
@@ -51,8 +51,8 @@ body {
     grid-template-rows:
       $tablet-header-height
       $tablet-game-height
-      auto
-      $tablet-comment-height;
+      min(100vw, $tablet-max-board-height)
+      max($tablet-min-comment-height, $tablet-max-comment-height);
     grid-row-gap: $tablet-grid-gaps;
   }
 }

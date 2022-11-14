@@ -1,14 +1,27 @@
-// sizes for desktop version
+// definition: sizes for desktop version
 $desktop-header-height: 50px;
 $desktop-game-title-height: 106px;
 $desktop-comment-height: 135px;
 $desktop-grid-gaps: 15px;
+// calculated values for grid definition
+$desktop-fixed-height: $desktop-header-height + 2*$desktop-grid-gaps;
 
-// sizes for tablet version
+// definitions: sizes for tablet version
 $tablet-header-height: 40px;
 $tablet-game-height: 120px;
-$tablet-comment-height: 145px;
+$tablet-min-comment-height: 145px;
 $tablet-grid-gaps: 10px;
+// calculate middle line between comment and board
+$tablet-max-board-height: calc(100% 
+  - $tablet-header-height
+  - $tablet-game-height
+  - $tablet-grid-gaps*3
+  - $tablet-min-comment-height);
+$tablet-max-comment-height: calc(100%
+  - $tablet-header-height
+  - $tablet-game-height
+  - $tablet-grid-gaps*3
+  - 100vw);
 
 // colors
 $background: #D2D2D2;
