@@ -27,14 +27,13 @@ body {
    "header header"
     "game board"
     "comments comments";
-  grid-template-columns: 300px auto;
+  grid-template-columns: $desktop-game-width 1fr;
   grid-template-rows:
     $desktop-header-height
-    minmax(auto, calc(100%
-      - $desktop-fixed-height
-      - $desktop-comment-height
+    minmax(0, calc( 100vw
+      - $desktop-game-width
       ))
-    minmax($desktop-comment-height, auto);
+    minmax($desktop-comment-height, 1fr);
   grid-row-gap: $desktop-grid-gaps;
   height: 100%;
   max-width: 1060px;
