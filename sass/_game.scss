@@ -6,7 +6,7 @@
 
   @include device("medium") {
     position: relative;
-    height: $tablet-game-height;
+    height: $medium-game-height;
   }
 
   > #title {

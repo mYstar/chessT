@@ -48,10 +48,10 @@ body {
       "comments";
     grid-template-columns: 100%;
     grid-template-rows:
-      $tablet-header-height
-      $tablet-game-height
-      min(100vw, $tablet-max-board-height)
-      max($tablet-min-comment-height, $tablet-max-comment-height);
-    grid-row-gap: $tablet-grid-gaps;
+      $medium-header-height
+      $medium-game-height
+      min(100vw, $medium-max-board-height)
+      max($medium-min-comment-height, $medium-max-comment-height);
+    grid-row-gap: $medium-grid-gaps;
   }
 }
