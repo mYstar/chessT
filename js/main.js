@@ -1,12 +1,12 @@
 /**
  * This function removes the highlighting of the old move
  * and highlights the new move in the #game section.
-*
-* @param moveList: an array of moves, each containing all the 3 <div>s in the
-*   row to select.
-* @param moveNumber: the number of the move to be selected from the list
-* @param playerColor: a string giving the selected players color 
-*   ("white" || "black")
+ *
+ * @param moveList: an array of moves, each containing all the 3 <div>s in the
+ *   row to select.
+ * @param moveNumber: the number of the move to be selected from the list
+ * @param playerColor: a string giving the selected players color 
+ *   ("white" || "black")
  */
 var selectMove = function(moveList, moveNumber, playerColor) {
   if(currentMove !== undefined) {
@@ -37,6 +37,50 @@ var selectMove = function(moveList, moveNumber, playerColor) {
   currentMove = newMove;
 }
 
+/**
+ * This function removes the highlighting of the old piece and highlight the new one.
+ *
+ * @param piece: the piece to be highlighted.
+ */
+var selectPiece = function(piece) {
+  // check if there is a piece on the field
+  if(piece.getElementsByTagName("img").length === 0) {
+    return undefined;
+  }
+  
+  // remove the old marking
+  if(currentPiece !== undefined) {
+    currentPiece.children.namedItem("sel-piece").remove();
+  }
+
+  // set new marking
+  piece.innerHTML += '<svg id="sel-piece">'
+    +'    <rect x="0%" y="0%" />'
+    +'    <rect x="0%" y="65%" />'
+    +'    <rect x="65%" y="0%" />'
+    +'    <rect x="65%" y="65%" />'
+    +'</svg>';
+
+  // update current piece reference
+  currentPiece = piece;
+}
+
+/**
+ * Takes a number and calculates the corresponding column marking on a chess board.
+ *
+ * @param number: the number to process (0..7)
+ * @returns: a char ("A", ..., "H"), or undefined when number is out of range
+ */
+var numberToCol = function(number) {
+  if(number < 0 || number >= 8) {
+    return undefined;
+  }
+
+  var startCharCode = 'A'.charCodeAt(0);
+
+  return String.fromCharCode(startCharCode + number);
+}
+
 var init = function() {
 
   // --- create datastructures ---
@@ -50,10 +94,30 @@ var init = function() {
       item.nextElementSibling.nextElementSibling
     ])
   }
+  // create an array containing the board
+  // [[A1], [A2], [A3], ... , [A8]],
+  // [[B1], [B2], [B3], ... , [B8]],
+  // [[C1], [C2], [C3], ... , [C8]],
+  // ...
+  var fields = []
+  for(let nCol=0; nCol<8; nCol++) {
+    let column = [];
+
+    for(let nRow=0; nRow<8; nRow++) {
+      let fieldName = numberToCol(nCol) + (nRow+1).toString();
+      let field = document.getElementById(fieldName);
+      
+      column.push(field);
+    }
+
+    fields.push(column);
+  }
 
   // select the first move
   selectMove(moveRows, 0, "white");
 
+  // --- onclick handlers ---
+  // make game moves clickable
   for (let i = 0; i < moveRows.length; i++) {
     move = moveRows[i];
     
@@ -65,7 +129,16 @@ var init = function() {
       selectMove(moveRows, i, "black");
     }
   }
+  // make pieces clickable
+  for(let nCol=0; nCol<8; nCol++) {
+    for(let nRow=0; nRow<8; nRow++) {
+      fields[nCol][nRow].onclick = function() {
+        selectPiece(this);
+      }
+    }
+  }
 }
 
 var currentMove = undefined;
+var currentPiece = undefined;
 init();
