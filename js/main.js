@@ -1,23 +1,14 @@
-var moveNumbers = document.getElementsByClassName("move-number");
-var moveRows = [];
-for (item of moveNumbers) {
-  moveRows.push([
-    item,
-    item.nextElementSibling,
-    item.nextElementSibling.nextElementSibling
-  ])
-}
-var currentMove = undefined;
 /**
  * This function removes the highlighting of the old move
- * and highlights the new move.
+ * and highlights the new move in the #game section.
 *
-* @param newMove: an size 3 array containing all the <div>s in the
-*   row to select. get these from var moveRows
+* @param moveList: an array of moves, each containing all the 3 <div>s in the
+*   row to select.
+* @param moveNumber: the number of the move to be selected from the list
 * @param playerColor: a string giving the selected players color 
 *   ("white" || "black")
  */
-var selectMove = function(newMove, playerColor) {
+var selectMove = function(moveList, moveNumber, playerColor) {
   if(currentMove !== undefined) {
     currentMove[0].classList.remove("sel-row");
     currentMove[1].classList.remove("sel-row");
@@ -25,6 +16,8 @@ var selectMove = function(newMove, playerColor) {
 
     document.getElementById('sel-move').remove();
   }
+
+  newMove = moveList[moveNumber];
 
   newMove[0].classList.add("sel-row");
   newMove[1].classList.add("sel-row");
@@ -43,15 +36,36 @@ var selectMove = function(newMove, playerColor) {
 
   currentMove = newMove;
 }
-selectMove(moveRows[0], "white");
 
-for (let move of moveRows) {
-  
-  move[1].onclick = function() {
-    selectMove(move, "white");
+var init = function() {
+
+  // --- create datastructures ---
+  // create an array containing the game
+  var moveNumbers = document.getElementsByClassName("move-number");
+  var moveRows = [];
+  for (item of moveNumbers) {
+    moveRows.push([
+      item,
+      item.nextElementSibling,
+      item.nextElementSibling.nextElementSibling
+    ])
   }
 
-  move[2].onclick = function() {
-    selectMove(move, "black");
+  // select the first move
+  selectMove(moveRows, 0, "white");
+
+  for (let i = 0; i < moveRows.length; i++) {
+    move = moveRows[i];
+    
+    move[1].onclick = function() {
+      selectMove(moveRows, i, "white");
+    }
+
+    move[2].onclick = function() {
+      selectMove(moveRows, i, "black");
+    }
   }
 }
+
+var currentMove = undefined;
+init();
