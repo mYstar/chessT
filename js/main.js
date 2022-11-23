@@ -1,3 +1,5 @@
+import * as board from "./board.js";
+
 /**
  * This function removes the highlighting of the old move
  * and highlights the new move in the #game section.
@@ -17,7 +19,7 @@ var selectMove = function(moveList, moveNumber, playerColor) {
     document.getElementById('sel-move').remove();
   }
 
-  newMove = moveList[moveNumber];
+  let newMove = moveList[moveNumber];
 
   newMove[0].classList.add("sel-row");
   newMove[1].classList.add("sel-row");
@@ -35,34 +37,6 @@ var selectMove = function(moveList, moveNumber, playerColor) {
   }
 
   currentMove = newMove;
-}
-
-/**
- * This function removes the highlighting of the old piece and highlight the new one.
- *
- * @param piece: the piece to be highlighted.
- */
-var selectPiece = function(piece) {
-  // check if there is a piece on the field
-  if(piece.getElementsByTagName("img").length === 0) {
-    return undefined;
-  }
-  
-  // remove the old marking
-  if(currentPiece !== undefined) {
-    currentPiece.children.namedItem("sel-piece").remove();
-  }
-
-  // set new marking
-  piece.innerHTML += '<svg id="sel-piece">'
-    +'    <rect x="0%" y="0%" />'
-    +'    <rect x="0%" y="65%" />'
-    +'    <rect x="65%" y="0%" />'
-    +'    <rect x="65%" y="65%" />'
-    +'</svg>';
-
-  // update current piece reference
-  currentPiece = piece;
 }
 
 /**
@@ -87,7 +61,7 @@ var init = function() {
   // create an array containing the game
   var moveNumbers = document.getElementsByClassName("move-number");
   var moveRows = [];
-  for (item of moveNumbers) {
+  for (let item of moveNumbers) {
     moveRows.push([
       item,
       item.nextElementSibling,
@@ -119,7 +93,7 @@ var init = function() {
   // --- onclick handlers ---
   // make game moves clickable
   for (let i = 0; i < moveRows.length; i++) {
-    move = moveRows[i];
+    let move = moveRows[i];
     
     move[1].onclick = function() {
       selectMove(moveRows, i, "white");
@@ -133,12 +107,12 @@ var init = function() {
   for(let nCol=0; nCol<8; nCol++) {
     for(let nRow=0; nRow<8; nRow++) {
       fields[nCol][nRow].onclick = function() {
-        selectPiece(this);
+        board.selectPiece(this);
+        board.drawMoveOptions(fields, this);
       }
     }
   }
 }
 
 var currentMove = undefined;
-var currentPiece = undefined;
 init();
