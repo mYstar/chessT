@@ -11,7 +11,7 @@ var currentPiece = undefined;
 *           color can be: black, white
 *           OR null, if there is no piece on the field
 */
-function pieceType(field) {  
+function pieceInfo(field) {  
   let piece = field.getElementsByTagName("img").item(0);
 
   if(piece === null) {
@@ -77,6 +77,29 @@ function highlightMoveOption(board, col, row) {
 }
 
 /**
+* Removes all .move-option highlights from the whole board.
+*
+* @param board: the board to alter
+*
+* @returns: the altered board
+*/
+function removeHighlights(board) {
+
+  for(let col = 0; col < 8; col++) {
+    for(let row = 0; row < 8; row++) {
+      let field = board[col][row];
+      let highlight = field.getElementsByClassName("move-option");
+
+      if(highlight.length !== 0) {
+        highlight.item(0).remove();
+      }
+    }
+  }
+
+  return board;
+}
+
+/**
 * Draws a highlighting on the fields where the rook can move.
 *
 * @param board: the array board structure to draw the highlighting in
@@ -85,7 +108,7 @@ function highlightMoveOption(board, col, row) {
 * @returns: 0 on success, null on error
 */
 function drawKnightMoveOptions(board, knight) {
-  if(pieceType(knight).type != 'knight') {
+  if(pieceInfo(knight).type != 'knight') {
     return null
   }
 
@@ -120,7 +143,7 @@ function drawKnightMoveOptions(board, knight) {
 * @returns: 0 on success, null on error
 */
 function drawBishopMoveOptions(board, bishop) {
-  if(pieceType(bishop).type != 'bishop') {
+  if(pieceInfo(bishop).type != 'bishop') {
     return null
   }
 
@@ -164,7 +187,7 @@ function drawBishopMoveOptions(board, bishop) {
 * @returns: 0 on success, null on error
 */
 function drawQueenMoveOptions(board, queen) {
-  if(pieceType(queen).type != 'queen') {
+  if(pieceInfo(queen).type != 'queen') {
     return null
   }
 
@@ -233,7 +256,7 @@ function drawQueenMoveOptions(board, queen) {
 * @returns: 0 on success, null on error
 */
 function drawPawnMoveOptions(board, pawn) {
-  let pInfo = pieceType(pawn);
+  let pInfo = pieceInfo(pawn);
   if(pInfo.type != 'pawn') {
     return null
   }
@@ -261,7 +284,7 @@ function drawPawnMoveOptions(board, pawn) {
 * @returns: 0 on success, null on error
 */
 function drawKingMoveOptions(board, king) {
-  if(pieceType(king).type != 'king') {
+  if(pieceInfo(king).type != 'king') {
     return null
   }
 
@@ -287,7 +310,7 @@ function drawKingMoveOptions(board, king) {
 * @returns: 0 on success, null on error
 */
 function drawRookMoveOptions(board, rook) {
-  if(pieceType(rook).type != 'rook') {
+  if(pieceInfo(rook).type != 'rook') {
     return null
   }
 
@@ -330,15 +353,17 @@ function drawRookMoveOptions(board, rook) {
  * @param field: the piece to be highlighted.
  */
 export function selectPiece(field) {
-  // check if there is a piece on the field
-  if(field.getElementsByTagName("img").length === 0) {
-    return undefined;
-  }
-  
   // remove the old marking
   if(currentPiece !== undefined) {
     currentPiece.children.namedItem("sel-piece").remove();
   }
+
+  // check if there is a piece on the field
+  if(field.getElementsByTagName("img").length === 0) {
+    currentPiece = undefined;
+    return undefined;
+  }
+
   // update current piece reference
   currentPiece = field;
 
@@ -351,14 +376,30 @@ export function selectPiece(field) {
     +'</svg>';
 }
 
+/**
+ * Draw the move options for a piece on a specific field.
+ * 1. Removes previous highlighting.
+ * 2. Detects the piece.
+ *    2a. if there is no piece, don't highlight anything.
+ * 3. Adds highlight <svg> elements specific to the piece.
+ * 
+ * @param board: the board to add the highlighting to.
+ * @param field: the field to search for the piece
+ * @returns: the altered board.
+ */
 export function drawMoveOptions(board, field) {
-  let type = pieceType(field);
+  // --- 1. ---
+  removeHighlights(board);
 
-  if(type === null) {
-    return;
+  // --- 2. ---
+  let pInfo = pieceInfo(field);
+
+  if(pInfo === null) {
+    return board;
   }
 
-  switch(type.type) {
+  // --- 3. ---
+  switch(pInfo.type) {
     case 'rook':
       drawRookMoveOptions(board, field);
       break;
@@ -378,5 +419,5 @@ export function drawMoveOptions(board, field) {
       drawPawnMoveOptions(board, field);
       break;
   }
-  console.log('type: ' + type.type + ' color: ' + type.color);
+  return board;
 }
