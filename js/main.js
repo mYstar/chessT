@@ -39,8 +39,86 @@ var selectMove = function(moveList, moveNumber, playerColor) {
   currentMove = newMove;
 }
 
-var init = function() {
+/**
+ * Translates changes made to a chessboard onto changes in the HTML DOM.
+ * 
+ * @param fieldId: the ID of the field in chess notation (e.g. "A1")
+ * @param piece: a string describing the piece to place (e.g. "rook"),
+ *               undefined leaves the piece as is
+ * @param color: a string describing the color of the piece to place (e.g. "black"),
+ *               undefined leaves the piece as is
+ * @param selected: a boolean flagging if the piece is currently selected by the user
+ * @param highlighted: a boolean flagging if the piece is currently highlighted as move option
+ * @returns: 0 if the change was successful, -1 on error
+ */
+let changeFieldInHtml = function(
+  fieldId, 
+  piece=undefined,
+  color=undefined,
+  selected=false,
+  highlighted=false) {
+  
+  let field = document.getElementById(fieldId);
+  if(field == null) {
+    console.warn("field: " + fieldId + " can not be found in the DOM.");
+    return -1;
+  }
 
+  // perform changes on the piece
+  if(piece != undefined && color != undefined) {
+    // get old piece
+    let oldPiece = field.getElementsByClassName("black");
+    if(oldPiece.length > 0) {
+      oldPiece.item(0).remove();
+    }
+    oldPiece = field.getElementsByClassName("white");
+    if(oldPiece.length > 0) {
+      oldPiece.item(0).remove();
+    }
+
+    field.innerHTML += '<img class="'
+    + piece 
+    + ' '
+    + color
+    + '" src="./img/'
+    + piece 
+    + '_'
+    + color
+    +'.svg" alt="'
+    + piece 
+    + ' '
+    + color
+    + '" />';
+  }
+
+  // perform selection
+  let oldSelection = field.getElementsByClassName("sel-piece");
+  if(selected === true && oldSelection.length === 0) {
+    field.innerHTML += '<svg class="sel-piece">'
+      +'    <rect x="0%" y="0%" />'
+      +'    <rect x="0%" y="65%" />'
+      +'    <rect x="65%" y="0%" />'
+      +'    <rect x="65%" y="65%" />'
+      +'</svg>';
+  }
+  if(selected === false && oldSelection.length > 0) {
+    oldSelection.item(0).remove();
+  }
+
+  // perform highlighting
+  let oldHighlight = field.getElementsByClassName('move-option');
+  if(highlighted === true && oldHighlight.length === 0) {
+
+    field.innerHTML += '<svg class="move-option">'
+      + '<circle cx="50%" cy="50%" r="50%"/>'
+      + '</svg>';
+  }
+  if(highlighted === false && oldHighlight.length > 0) {
+    oldHighlight.item(0).remove();
+  }
+}
+
+var init = function() {
   // --- create datastructures ---
   // create an array containing the game
   var moveNumbers = document.getElementsByClassName("move-number");
@@ -55,9 +133,6 @@ var init = function() {
   // select the first move
   selectMove(moveRows, 0, "white");
 
-  //create board
-  let board = new Board(document);
-
   // --- onclick handlers ---
   // make game moves clickable
   for (let i = 0; i < moveRows.length; i++) {
@@ -69,6 +144,38 @@ var init = function() {
 
     move[2].onclick = function() {
       selectMove(moveRows, i, "black");
+    }
+  }
+
+  // create board and register handlers
+  let board = new Board();
+  board.setStartingConfiguration();
+  let changes = board.getBoardChanges();
+  for(let id in changes) {
+    let change = changes[id];
+    changeFieldInHtml(
+      id,
+      change.piece,
+      change.color,
+      change.selected, 
+      change.highlighted);
+  }
+
+  let fields = document.getElementsByClassName('field');
+  // make pieces clickable
+  for(let i = 0; i<fields.length; i++) {
+    fields.item(i).onclick = function() {
+      board.selectPiece(this.getAttribute('id'));
+      let changes = board.getBoardChanges()
+      for(let id in changes) {
+        let change = changes[id];
+        changeFieldInHtml(
+          id,
+          change.piece,
+          change.color,
+          change.selected, 
+          change.highlighted);
+      }
     }
   }
 }

@@ -8,99 +8,122 @@ export default class Board {
   // ...
   #fields;
 
-  constructor(htmlDoc) {
-    // create an array containing the board
+  /* initializes the fields to an array containing the empty board.
+   */
+  constructor() {
     this.#fields = []
     for(let nCol=0; nCol<8; nCol++) {
       let column = [];
 
       for(let nRow=0; nRow<8; nRow++) {
-        let fieldName = this.#numberToCol(nCol) + (nRow+1).toString();
-        let field = htmlDoc.getElementById(fieldName);
+        let fieldName = this.#matrixIdxToNotation(nCol, nRow);
+        let field = 
+        {
+          id: fieldName,
+          piece: null,
+          color: null,
+          col: nCol,
+          row: nRow,
+          selected: false,
+          highlighted: false,
+        };
         
         column.push(field);
       }
 
       this.#fields.push(column);
     }
+  }
 
-    // make pieces clickable
-    let currBoard = this;
-    for(let ncol=0; ncol<8; ncol++) {
-      for(let nrow=0; nrow<8; nrow++) {
-        this.#fields[ncol][nrow].onclick = function() {
-          currBoard.selectPiece(this);
-          currBoard.drawMoveOptions(this);
-        }
+  /** 
+   * sets the pieces to a starting Configuration for a game of chess
+   */
+  setStartingConfiguration() {
+    let baseRow = ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"];
+    // white pieces
+    for(let col = 0; col < 8; col++) {
+      let fieldName = this.#matrixIdxToNotation(col, 0);
+      this.#fields[col][0] = {
+          id: fieldName,
+          piece: baseRow[col],
+          color: "white",
+          col: col,
+          row: 0,
+          selected: false,
+          highlighted: false,
+      }
+      fieldName = this.#matrixIdxToNotation(col, 1);
+      this.#fields[col][1] = {
+          id: fieldName,
+          piece: "pawn",
+          color: "white",
+          col: col,
+          row: 1,
+          selected: false,
+          highlighted: false,
+      }
+    }
+
+    // black pieces
+    for(let col = 0; col < 8; col++) {
+      let fieldName = this.#matrixIdxToNotation(col, 7);
+      this.#fields[col][7] = {
+          id: fieldName,
+          piece: baseRow[col],
+          color: "black",
+          col: col,
+          row: 7,
+          selected: false,
+          highlighted: false,
+      }
+      fieldName = this.#matrixIdxToNotation(col, 6);
+      this.#fields[col][6] = {
+          id: fieldName,
+          piece: "pawn",
+          color: "black",
+          col: col,
+          row: 6,
+          selected: false,
+          highlighted: false,
       }
     }
   }
 
   /**
-   * Takes a number and calculates the corresponding column marking on a chess board.
+   * Takes a number and calculates the corresponding notation marking on a chess board.
    *
-   * @param number: the number to process (0..7)
-   * @returns: a char ("A", ..., "H"), or undefined when number is out of range
+   * @param col: the column index to translate (0..7)
+   * @param row: the row index to translate (0..7)
+   * @returns: a string ("A1", ..., "H8"), or undefined when number is out of range
    */
-  #numberToCol(number) {
-    if(number < 0 || number >= 8) {
+  #matrixIdxToNotation(col, row) {
+    if(col < 0 || col >= 8 || row < 0 || row >= 8) {
       return undefined;
     }
 
     var startCharCode = 'A'.charCodeAt(0);
 
-    return String.fromCharCode(startCharCode + number);
+    return String.fromCharCode(startCharCode + col) + (row+1).toString();
   }
 
   /**
-  * Detects the piece type and the color of the piece on the given field
-  *
-  *
-  * @param field: a field on the board to be searched.
-  * @returns: an object {type: 'type', color: 'color'} for the piece found 
-  *           type can be: rook, knight, bishop, queen, king or pawn
-  *           color can be: black, white
-  *           OR null, if there is no piece on the field
-  */
-  #pieceInfo(field) {  
-    let piece = field.getElementsByTagName("img").item(0);
-
-    if(piece === null) {
-      return null;
-    }
-
-    let classes = piece.classList;
-    let pieceType = classes.item(0);
-    let pieceColor = classes.item(1);
-
-    if(pieceType === null || pieceType.search(/rook|knight|bishop|queen|king|pawn/) === -1)
-      return null;
-
-    if(pieceColor === null || pieceColor.search(/black|white/) === -1)
-      return null;
-
-    return {type: pieceType, color: pieceColor};
-  }
-
-  /**
-  * parses the class of the given field and returns the 
-  * array indexes on the board.
-  *
-  * @param field: the field div to parse
-  * @returns: an object {row: <idx>, col: <idx>} with the corresponding indexes
-  *           OR undefied if there was an error
-  */
-  #getPosition(field) {
-    let positionStr = field.id;
-
-    if(positionStr === null || positionStr.length !== 2) {
+   * Takes a chessboard field notation (e.g. "A1") and translates it into a
+   * row and column index for the fields matrix.
+   *
+   * @param notation: the field notation to parse
+   * @returns: an object {col: colN, row: rowN} containing the indexes
+   */
+  #matrixNotationToIdx(notation) {
+    if(notation.length !== 2) {
       return undefined;
     }
+    let colN = notation[0];
+    let rowN = notation[1];
 
-    let col = positionStr.charCodeAt(0) - "A".charCodeAt(0);
-    let row = parseInt(positionStr.charAt(1)) - 1;
+    let startCharCode = 'A'.charCodeAt(0);
+    let colCharCode = colN.charCodeAt(0);
 
-    return {row: row, col: col};
+    return {col:colCharCode - startCharCode, row: Number(rowN)-1};
   }
 
   /**
@@ -118,11 +141,7 @@ export default class Board {
       return -1;
     }
 
-    let field = this.#fields[col][row];
-    // set new highlight
-    field.innerHTML += '<svg class="move-option">'
-      + '<circle cx="50%" cy="50%" r="50%"/>'
-      + '</svg>';
+    this.#fields[col][row].highlighted = true;
 
     return 0;
   }
@@ -132,22 +151,17 @@ export default class Board {
   *
   * @param board: the board to alter
   *
-  * @returns: the altered board
+  * @returns: 0 on success
   */
   #removeHighlights() {
 
     for(let col = 0; col < 8; col++) {
       for(let row = 0; row < 8; row++) {
-        let field = this.#fields[col][row];
-        let highlight = field.getElementsByClassName("move-option");
-
-        if(highlight.length !== 0) {
-          highlight.item(0).remove();
-        }
+        this.#fields[col][row].highlighted = false;
       }
     }
 
-    return this;
+    return 0;
   }
 
   /**
@@ -156,14 +170,13 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param knight: an html div from the board, where the knight stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawKnightMoveOptions(knight) {
-    if(this.#pieceInfo(knight).type != 'knight') {
-      return null
+    if(knight.piece != 'knight') {
+      return -1;
     }
 
-    let position = this.#getPosition(knight);
     const moveOptions = [
       {row: 2, col: 1},
       {row: 1, col: 2},
@@ -176,8 +189,8 @@ export default class Board {
     ];
 
     for(let move of moveOptions) {
-      let newRow = position.row + move.row;
-      let newCol = position.col + move.col;
+      let newRow = knight.row + move.row;
+      let newCol = knight.col + move.col;
 
       this.#highlightMoveOption(newCol, newRow);
     }
@@ -191,35 +204,33 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param bishop: an html div from the board, where the bishop stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawBishopMoveOptions(bishop) {
-    if(this.#pieceInfo(bishop).type != 'bishop') {
-      return null
+    if(bishop.piece != 'bishop') {
+      return -1;
     }
-
-    let position = this.#getPosition(bishop);
 
     // go diagonally into all 4 directions
-    for(let r = position.row+1, c = position.col+1;; r++, c++){
+    for(let r = bishop.row+1, c = bishop.col+1;; r++, c++){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1, c = position.col+1;; r--, c++){
+    for(let r = bishop.row-1, c = bishop.col+1;; r--, c++){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1, c = position.col-1;; r--, c--){
+    for(let r = bishop.row-1, c = bishop.col-1;; r--, c--){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row+1, c = position.col-1;; r++, c--){
+    for(let r = bishop.row+1, c = bishop.col-1;; r++, c--){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
@@ -235,60 +246,58 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param queen: an html div from the board, where the queen stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawQueenMoveOptions(queen) {
-    if(this.#pieceInfo(queen).type != 'queen') {
-      return null
+    if(queen.piece != 'queen') {
+      return -1;
     }
-
-    let position = this.#getPosition(queen);
 
     // go horizontally and vertically into all 4 directions
-    for(let r = position.row+1;; r++) {
-      let success = this.#highlightMoveOption(position.col, r);
+    for(let r = queen.row+1;; r++) {
+      let success = this.#highlightMoveOption(queen.col, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1;; r--) {
-      let success = this.#highlightMoveOption(position.col, r);
+    for(let r = queen.row-1;; r--) {
+      let success = this.#highlightMoveOption(queen.col, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let c = position.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, position.row);
+    for(let c = queen.col+1;; c++) {
+      let success = this.#highlightMoveOption(c, queen.row);
       if(success !== 0) {
         break;
       }
     }
-    for(let c = position.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, position.row);
+    for(let c = queen.col-1;; c--) {
+      let success = this.#highlightMoveOption(c, queen.row);
       if(success !== 0) {
         break;
       }
     }
     // go diagonally into all 4 directions
-    for(let r = position.row+1, c = position.col+1;; r++, c++){
+    for(let r = queen.row+1, c = queen.col+1;; r++, c++){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1, c = position.col+1;; r--, c++){
+    for(let r = queen.row-1, c = queen.col+1;; r--, c++){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1, c = position.col-1;; r--, c--){
+    for(let r = queen.row-1, c = queen.col-1;; r--, c--){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row+1, c = position.col-1;; r++, c--){
+    for(let r = queen.row+1, c = queen.col-1;; r++, c--){
       let success = this.#highlightMoveOption(c, r);
       if(success !== 0) {
         break;
@@ -304,23 +313,20 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param pawn: an html div from the board, where the pawn stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawPawnMoveOptions(pawn) {
-    let pInfo = this.#pieceInfo(pawn);
-    if(pInfo.type != 'pawn') {
-      return null
+    if(pawn.piece != 'pawn') {
+      return -1
     }
 
-    let position = this.#getPosition(pawn);
+    let direction = (pawn.color == "white")? 1 : -1;
+    let isStartPos = (pawn.color == "white" && pawn.row === 1 
+                 || pawn.color == "black" && pawn.row === 6);
 
-    let direction = (pInfo.color == "white")? 1 : -1;
-    let isStartPos = (pInfo.color == "white" && position.row === 1 
-                 || pInfo.color == "black" && position.row === 6);
-
-    this.#highlightMoveOption(position.col, position.row + direction);
+    this.#highlightMoveOption(pawn.col, pawn.row + direction);
     if(isStartPos) {
-      this.#highlightMoveOption(position.col, position.row + 2*direction);
+      this.#highlightMoveOption(pawn.col, pawn.row + 2*direction);
     }
 
     return 0;
@@ -332,14 +338,12 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param king: an html div from the board, where the king stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawKingMoveOptions(king) {
-    if(this.#pieceInfo(king).type != 'king') {
-      return null
+    if(king.piece != 'king') {
+      return -1;
     }
-
-    let position = this.#getPosition(king);
 
     for(let c = -1; c<=1; c++) {
       for(let r = -1; r<=1; r++) {
@@ -348,9 +352,11 @@ export default class Board {
           continue;
         }
 
-        this.#highlightMoveOption(position.col + c, position.row + r);
+        this.#highlightMoveOption(king.col + c, king.row + r);
       }
     }
+
+    return 0;
   }
   /**
   * Draws a highlighting on the fields where the rook can move.
@@ -358,36 +364,34 @@ export default class Board {
   * @param board: the array board structure to draw the highlighting in
   * @param rook: an html div from the board, where the rook stands
   *
-  * @returns: 0 on success, null on error
+  * @returns: 0 on success, -1 on error
   */
   #drawRookMoveOptions(rook) {
-    if(this.#pieceInfo(rook).type != 'rook') {
-      return null
+    if(rook.piece != 'rook') {
+      return -1;
     }
-
-    let position = this.#getPosition(rook);
 
     // go into all 4 directions from the rooks position and place highlights
-    for(let r = position.row+1;; r++) {
-      let success = this.#highlightMoveOption(position.col, r);
+    for(let r = rook.row+1;; r++) {
+      let success = this.#highlightMoveOption(rook.col, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let r = position.row-1;; r--) {
-      let success = this.#highlightMoveOption(position.col, r);
+    for(let r = rook.row-1;; r--) {
+      let success = this.#highlightMoveOption(rook.col, r);
       if(success !== 0) {
         break;
       }
     }
-    for(let c = position.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, position.row);
+    for(let c = rook.col+1;; c++) {
+      let success = this.#highlightMoveOption(c, rook.row);
       if(success !== 0) {
         break;
       }
     }
-    for(let c = position.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, position.row);
+    for(let c = rook.col-1;; c--) {
+      let success = this.#highlightMoveOption(c, rook.row);
       if(success !== 0) {
         break;
       }
@@ -401,76 +405,99 @@ export default class Board {
    * removes the highlighting of the old piece and highlights 
    * the new one.
    *
-   * @param field: the piece to be highlighted.
+   * @param notation: the column-row string (e.g. "A1") where the piece stands
+   * @return: 0 if selection was successful, -1 if no piece found
    */
-  selectPiece(field) {
+  selectPiece(notation) {
+    // --- 1. ---
+    this.#removeHighlights();
+
+    let indexes = this.#matrixNotationToIdx(notation);
+    let field = this.#fields[indexes.col][indexes.row]
+
     // remove the old marking
     if(this.#currentPiece !== undefined) {
-      this.#currentPiece.children.namedItem("sel-piece").remove();
+      this.#currentPiece.selected = false;
     }
 
     // check if there is a piece on the field
-    if(field.getElementsByTagName("img").length === 0) {
+    if(field.piece === null) {
       this.#currentPiece = undefined;
-      return undefined;
+      return -1;
     }
 
     // update current piece reference
     this.#currentPiece = field;
+    field.selected = true;
 
-    // set new marking
-    field.innerHTML += '<svg id="sel-piece">'
-      +'    <rect x="0%" y="0%" />'
-      +'    <rect x="0%" y="65%" />'
-      +'    <rect x="65%" y="0%" />'
-      +'    <rect x="65%" y="65%" />'
-      +'</svg>';
+    // highlight the move options for the piece
+    let success = this.#highlightMoveOptions(field);
+
+    return success;
   }
 
   /**
-   * Draw the move options for a piece on a specific field.
-   * 1. Removes previous highlighting.
-   * 2. Detects the piece.
+   * Highlight the move options for a piece on a specific field.
+   * 1. Detects the piece.
    *    2a. if there is no piece, don't highlight anything.
-   * 3. Adds highlight <svg> elements specific to the piece.
+   * 2. Adds highlight <svg> elements specific to the piece.
    * 
    * @param board: the board to add the highlighting to.
    * @param field: the field to search for the piece
-   * @returns: the altered board.
+   * @returns: 0 if highlighting was successful, -1 if no piece found or piece type undefined
    */
-  drawMoveOptions(field) {
+  #highlightMoveOptions(field) {
+
     // --- 1. ---
-    this.#removeHighlights();
-
-    // --- 2. ---
-    let pInfo = this.#pieceInfo(field);
-
-    if(pInfo === null) {
-      return this;
+    // see if there is a piece on the field
+    if(field.piece === null) {
+      return -1;
     }
 
-    // --- 3. ---
-    switch(pInfo.type) {
+    let success = -1;
+    // --- 2. ---
+    switch(field.piece) {
       case 'rook':
-        drawRookMoveOptions(field);
+        success = this.#drawRookMoveOptions(field);
         break;
       case 'knight':
-        this.#drawKnightMoveOptions(field);
+        success = this.#drawKnightMoveOptions(field);
         break;
       case 'bishop':
-        this.#drawBishopMoveOptions(field);
+        success = this.#drawBishopMoveOptions(field);
         break;
       case 'queen':
-        this.#drawQueenMoveOptions(field);
+        success = this.#drawQueenMoveOptions(field);
         break;
       case 'king':
-        this.#drawKingMoveOptions(field);
+        success = this.#drawKingMoveOptions(field);
         break;
       case 'pawn':
-        this.#drawPawnMoveOptions(field);
+        success = this.#drawPawnMoveOptions(field);
         break;
     }
-    return this;
+    return success;
+ }
+
+  /**
+   * @returns: the changes made to the board since the last call of this function
+   *           as a map: { "A1": {piece, color, selected, highlighted} }
+   */
+  // TODO: make this more intelligent (don't return the whole board every time)
+  getBoardChanges() {
+    let changes = {};
+    for(let col=0; col<8; col++) {
+      for(let row=0; row<8; row++) {
+        let field = this.#fields[col][row];
+        changes[field.id] = {
+          piece: field.piece, 
+          color: field.color,
+          selected: field.selected,
+          highlighted: field.highlighted,
+        }
+      }
+    }
+    return changes;
   }
 }
 
