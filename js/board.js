@@ -132,17 +132,32 @@ export default class Board {
   * @param board: the board to alter
   * @param col: the column number of the field to hightlight
   * @param row: the row number of the field to highlight
+  * @param color: the color of the piece that wants to move there
+  *               used in checking for collisions with other pieces
   *
-  * @returns: 0 if insert was successful, -1 when out o bounds
+  * @returns: 0 if insert was successful, 
+  *          -1 when out o bounds or blocked by own piece or
+  *             when blocked by other players piece
   */
-  #highlightMoveOption(col, row) {
+  #highlightMoveOption(col, row, color) {
 
+    // detect board bounds
     if(col < 0 || row < 0 || col > 7 || row > 7) {
       return -1;
     }
 
-    this.#fields[col][row].highlighted = true;
+    let field = this.#fields[col][row];
+    // detect other pieces, don't highlight own pieces,
+    // but highlight other pieces and give a notification,
+    // that a blocking piece was hit
+    if(field.piece !== null) {
+      if(field.color != color) {
+        field.highlighted = true;
+      }
+      return -1;
+    }
 
+    field.highlighted = true;
     return 0;
   }
 
@@ -192,7 +207,7 @@ export default class Board {
       let newRow = knight.row + move.row;
       let newCol = knight.col + move.col;
 
-      this.#highlightMoveOption(newCol, newRow);
+      this.#highlightMoveOption(newCol, newRow, knight.color);
     }
 
     return 0;
@@ -213,25 +228,25 @@ export default class Board {
 
     // go diagonally into all 4 directions
     for(let r = bishop.row+1, c = bishop.col+1;; r++, c++){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, bishop.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = bishop.row-1, c = bishop.col+1;; r--, c++){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, bishop.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = bishop.row-1, c = bishop.col-1;; r--, c--){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, bishop.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = bishop.row+1, c = bishop.col-1;; r++, c--){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, bishop.color);
       if(success !== 0) {
         break;
       }
@@ -255,50 +270,50 @@ export default class Board {
 
     // go horizontally and vertically into all 4 directions
     for(let r = queen.row+1;; r++) {
-      let success = this.#highlightMoveOption(queen.col, r);
+      let success = this.#highlightMoveOption(queen.col, r, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = queen.row-1;; r--) {
-      let success = this.#highlightMoveOption(queen.col, r);
+      let success = this.#highlightMoveOption(queen.col, r, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let c = queen.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, queen.row);
+      let success = this.#highlightMoveOption(c, queen.row, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let c = queen.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, queen.row);
+      let success = this.#highlightMoveOption(c, queen.row, queen.color);
       if(success !== 0) {
         break;
       }
     }
     // go diagonally into all 4 directions
     for(let r = queen.row+1, c = queen.col+1;; r++, c++){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = queen.row-1, c = queen.col+1;; r--, c++){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = queen.row-1, c = queen.col-1;; r--, c--){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, queen.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = queen.row+1, c = queen.col-1;; r++, c--){
-      let success = this.#highlightMoveOption(c, r);
+      let success = this.#highlightMoveOption(c, r, queen.color);
       if(success !== 0) {
         break;
       }
@@ -324,9 +339,9 @@ export default class Board {
     let isStartPos = (pawn.color == "white" && pawn.row === 1 
                  || pawn.color == "black" && pawn.row === 6);
 
-    this.#highlightMoveOption(pawn.col, pawn.row + direction);
+    this.#highlightMoveOption(pawn.col, pawn.row + direction, pawn.color);
     if(isStartPos) {
-      this.#highlightMoveOption(pawn.col, pawn.row + 2*direction);
+      this.#highlightMoveOption(pawn.col, pawn.row + 2*direction, pawn.color);
     }
 
     return 0;
@@ -352,7 +367,7 @@ export default class Board {
           continue;
         }
 
-        this.#highlightMoveOption(king.col + c, king.row + r);
+        this.#highlightMoveOption(king.col + c, king.row + r, king.color);
       }
     }
 
@@ -373,25 +388,25 @@ export default class Board {
 
     // go into all 4 directions from the rooks position and place highlights
     for(let r = rook.row+1;; r++) {
-      let success = this.#highlightMoveOption(rook.col, r);
+      let success = this.#highlightMoveOption(rook.col, r, rook.color);
       if(success !== 0) {
         break;
       }
     }
     for(let r = rook.row-1;; r--) {
-      let success = this.#highlightMoveOption(rook.col, r);
+      let success = this.#highlightMoveOption(rook.col, r, rook.color);
       if(success !== 0) {
         break;
       }
     }
     for(let c = rook.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, rook.row);
+      let success = this.#highlightMoveOption(c, rook.row, rook.color);
       if(success !== 0) {
         break;
       }
     }
     for(let c = rook.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, rook.row);
+      let success = this.#highlightMoveOption(c, rook.row, rook.color);
       if(success !== 0) {
         break;
       }
@@ -484,6 +499,7 @@ export default class Board {
    *           as a map: { "A1": {piece, color, selected, highlighted} }
    */
   // TODO: make this more intelligent (don't return the whole board every time)
+  // then: alter tests to expect exact number of changes
   getBoardChanges() {
     let changes = {};
     for(let col=0; col<8; col++) {
