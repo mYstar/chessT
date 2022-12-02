@@ -122,8 +122,16 @@ export default class Board {
 
     let startCharCode = 'A'.charCodeAt(0);
     let colCharCode = colN.charCodeAt(0);
+    let col = colCharCode - startCharCode;
+    let row = Number(rowN)-1;
+    if(col < 0 || col > 7) {
+      return undefined;
+    }
+    if(row < 0 || row > 7) {
+      return undefined;
+    }
 
-    return {col:colCharCode - startCharCode, row: Number(rowN)-1};
+    return {col: col, row: row};
   }
 
   /**
@@ -188,10 +196,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawKnightMoveOptions(knight) {
-    if(knight.piece != 'knight') {
-      return -1;
-    }
-
     const moveOptions = [
       {row: 2, col: 1},
       {row: 1, col: 2},
@@ -222,10 +226,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawBishopMoveOptions(bishop) {
-    if(bishop.piece != 'bishop') {
-      return -1;
-    }
-
     // go diagonally into all 4 directions
     for(let r = bishop.row+1, c = bishop.col+1;; r++, c++){
       let success = this.#highlightMoveOption(c, r, bishop.color);
@@ -264,10 +264,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawQueenMoveOptions(queen) {
-    if(queen.piece != 'queen') {
-      return -1;
-    }
-
     // go horizontally and vertically into all 4 directions
     for(let r = queen.row+1;; r++) {
       let success = this.#highlightMoveOption(queen.col, r, queen.color);
@@ -331,10 +327,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawPawnMoveOptions(pawn) {
-    if(pawn.piece != 'pawn') {
-      return -1
-    }
-
     let direction = (pawn.color == "white")? 1 : -1;
     let isStartPos = (pawn.color == "white" && pawn.row === 1 
                  || pawn.color == "black" && pawn.row === 6);
@@ -356,10 +348,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawKingMoveOptions(king) {
-    if(king.piece != 'king') {
-      return -1;
-    }
-
     for(let c = -1; c<=1; c++) {
       for(let r = -1; r<=1; r++) {
         // don't highlight the kings own position
@@ -382,10 +370,6 @@ export default class Board {
   * @returns: 0 on success, -1 on error
   */
   #drawRookMoveOptions(rook) {
-    if(rook.piece != 'rook') {
-      return -1;
-    }
-
     // go into all 4 directions from the rooks position and place highlights
     for(let r = rook.row+1;; r++) {
       let success = this.#highlightMoveOption(rook.col, r, rook.color);
@@ -428,6 +412,9 @@ export default class Board {
     this.#removeHighlights();
 
     let indexes = this.#matrixNotationToIdx(notation);
+    if( indexes === undefined ) {
+      return undefined;
+    }
     let field = this.#fields[indexes.col][indexes.row]
 
     // remove the old marking
@@ -453,24 +440,14 @@ export default class Board {
 
   /**
    * Highlight the move options for a piece on a specific field.
-   * 1. Detects the piece.
-   *    2a. if there is no piece, don't highlight anything.
-   * 2. Adds highlight <svg> elements specific to the piece.
    * 
    * @param board: the board to add the highlighting to.
    * @param field: the field to search for the piece
    * @returns: 0 if highlighting was successful, -1 if no piece found or piece type undefined
    */
   #highlightMoveOptions(field) {
-
-    // --- 1. ---
-    // see if there is a piece on the field
-    if(field.piece === null) {
-      return -1;
-    }
-
     let success = -1;
-    // --- 2. ---
+
     switch(field.piece) {
       case 'rook':
         success = this.#drawRookMoveOptions(field);

@@ -4,7 +4,8 @@ let checkChanges = function(changes, expectedSelected, expectedHighlight, expect
 
   let context = "Context: \nexpected selected: "  + expectedSelected
     + "\nexpected highlighted: " + expectedHighlight
-    + "\nexpected pieces: " + expectedPieces
+    + "\nexpected pieces: " + JSON.stringify(expectedPieces, null, 4)
+    + "\nchanges: " + JSON.stringify(changes, null, 4)
 
   for(const [position, properties] of Object.entries(changes)) {
     if(position == expectedSelected) {
@@ -29,6 +30,88 @@ let checkChanges = function(changes, expectedSelected, expectedHighlight, expect
 }
 
 describe("tests board starting configuration", () => {
+  it("checks that no out of bounds field can be selected", () => {
+    let board = new Board();
+    expect(board.selectPiece('testing')).toBe(undefined);
+    expect(board.selectPiece('A0')).toBe(undefined);
+    expect(board.selectPiece('A9')).toBe(undefined);
+    expect(board.selectPiece('I1')).toBe(undefined);
+  });
+
+  it("checks that piece detection works", () => {
+    let board = new Board();
+    expect(board.selectPiece('A1')).toBe(-1);
+    expect(board.selectPiece('B1')).toBe(-1);
+    expect(board.selectPiece('C1')).toBe(-1);
+    expect(board.selectPiece('D1')).toBe(-1);
+    expect(board.selectPiece('E1')).toBe(-1);
+    expect(board.selectPiece('F1')).toBe(-1);
+    expect(board.selectPiece('G1')).toBe(-1);
+    expect(board.selectPiece('H1')).toBe(-1);
+
+    expect(board.selectPiece('A2')).toBe(-1);
+    expect(board.selectPiece('B2')).toBe(-1);
+    expect(board.selectPiece('C2')).toBe(-1);
+    expect(board.selectPiece('D2')).toBe(-1);
+    expect(board.selectPiece('E2')).toBe(-1);
+    expect(board.selectPiece('F2')).toBe(-1);
+    expect(board.selectPiece('G2')).toBe(-1);
+    expect(board.selectPiece('H2')).toBe(-1);
+
+    expect(board.selectPiece('A3')).toBe(-1);
+    expect(board.selectPiece('B3')).toBe(-1);
+    expect(board.selectPiece('C3')).toBe(-1);
+    expect(board.selectPiece('D3')).toBe(-1);
+    expect(board.selectPiece('E3')).toBe(-1);
+    expect(board.selectPiece('F3')).toBe(-1);
+    expect(board.selectPiece('G3')).toBe(-1);
+    expect(board.selectPiece('H3')).toBe(-1);
+
+    expect(board.selectPiece('A4')).toBe(-1);
+    expect(board.selectPiece('B4')).toBe(-1);
+    expect(board.selectPiece('C4')).toBe(-1);
+    expect(board.selectPiece('D4')).toBe(-1);
+    expect(board.selectPiece('E4')).toBe(-1);
+    expect(board.selectPiece('F4')).toBe(-1);
+    expect(board.selectPiece('G4')).toBe(-1);
+    expect(board.selectPiece('H4')).toBe(-1);
+
+    expect(board.selectPiece('A5')).toBe(-1);
+    expect(board.selectPiece('B5')).toBe(-1);
+    expect(board.selectPiece('C5')).toBe(-1);
+    expect(board.selectPiece('D5')).toBe(-1);
+    expect(board.selectPiece('E5')).toBe(-1);
+    expect(board.selectPiece('F5')).toBe(-1);
+    expect(board.selectPiece('G5')).toBe(-1);
+    expect(board.selectPiece('H5')).toBe(-1);
+    
+    expect(board.selectPiece('A6')).toBe(-1);
+    expect(board.selectPiece('B6')).toBe(-1);
+    expect(board.selectPiece('C6')).toBe(-1);
+    expect(board.selectPiece('D6')).toBe(-1);
+    expect(board.selectPiece('E6')).toBe(-1);
+    expect(board.selectPiece('F6')).toBe(-1);
+    expect(board.selectPiece('G6')).toBe(-1);
+    expect(board.selectPiece('H6')).toBe(-1);
+    
+    expect(board.selectPiece('A7')).toBe(-1);
+    expect(board.selectPiece('B7')).toBe(-1);
+    expect(board.selectPiece('C7')).toBe(-1);
+    expect(board.selectPiece('D7')).toBe(-1);
+    expect(board.selectPiece('E7')).toBe(-1);
+    expect(board.selectPiece('F7')).toBe(-1);
+    expect(board.selectPiece('G7')).toBe(-1);
+    expect(board.selectPiece('H7')).toBe(-1);
+
+    expect(board.selectPiece('A8')).toBe(-1);
+    expect(board.selectPiece('B8')).toBe(-1);
+    expect(board.selectPiece('C8')).toBe(-1);
+    expect(board.selectPiece('D8')).toBe(-1);
+    expect(board.selectPiece('E8')).toBe(-1);
+    expect(board.selectPiece('F8')).toBe(-1);
+    expect(board.selectPiece('G8')).toBe(-1);
+    expect(board.selectPiece('H8')).toBe(-1);
+  });
 
   it("checks if all pieces are in place", () => {
     let board = new Board();
@@ -247,3 +330,179 @@ describe("tests knight behaviour", () => {
   });
 });
 
+describe("tests rook behaviour", () => {
+  let board;
+
+  beforeEach(() => {
+    board = new Board();
+    board.setStartingConfiguration();
+  })
+
+  it("shows correct starting move options", () => {
+    let ret = board.selectPiece('A1')
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    let expectedSelected = "A1";
+    let expectedHighlight = [];
+    let expectedPieces = [ 
+      {id: expectedSelected, piece: "rook", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('H1')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "H1";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "rook", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('A8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "A8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "rook", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('H8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "H8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "rook", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+});
+
+describe("tests bishop behaviour", () => {
+  let board;
+
+  beforeEach(() => {
+    board = new Board();
+    board.setStartingConfiguration();
+  })
+
+  it("shows correct starting move options", () => {
+    let ret = board.selectPiece('C1')
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    let expectedSelected = "C1";
+    let expectedHighlight = [];
+    let expectedPieces = [ 
+      {id: expectedSelected, piece: "bishop", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('F1')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "F1";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "bishop", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('C8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "C8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "bishop", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('F8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "F8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "bishop", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+});
+
+describe("tests queen behaviour", () => {
+  let board;
+
+  beforeEach(() => {
+    board = new Board();
+    board.setStartingConfiguration();
+  })
+
+  it("shows correct starting move options", () => {
+    let ret = board.selectPiece('D1')
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    let expectedSelected = "D1";
+    let expectedHighlight = [];
+    let expectedPieces = [ 
+      {id: expectedSelected, piece: "queen", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('D8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "D8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "queen", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+});
+
+
+describe("tests king behaviour", () => {
+  let board;
+
+  beforeEach(() => {
+    board = new Board();
+    board.setStartingConfiguration();
+  })
+
+  it("shows correct starting move options", () => {
+    let ret = board.selectPiece('E1')
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    let expectedSelected = "E1";
+    let expectedHighlight = [];
+    let expectedPieces = [ 
+      {id: expectedSelected, piece: "king", color: "white"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    ret = board.selectPiece('E8')
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(1);
+    expectedSelected = "E8";
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: expectedSelected, piece: "king", color: "black"},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+});
