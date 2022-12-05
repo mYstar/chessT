@@ -135,19 +135,18 @@ export default class Board {
   }
 
   /**
-  * Inserts the highlight svg into the field at row, col.
+  * Checks if a piece can move to a field.
   *
-  * @param board: the board to alter
-  * @param col: the column number of the field to hightlight
-  * @param row: the row number of the field to highlight
+  * @param col: the column number of the field
+  * @param row: the row number of the field
   * @param color: the color of the piece that wants to move there
   *               used in checking for collisions with other pieces
   *
-  * @returns: 0 if insert was successful, 
-  *          -1 when out o bounds or blocked by own piece or
-  *             when blocked by other players piece
+  * @returns: 0 if field is empty,
+  *           1 if occupied by enemy piece (of the other color)
+  *          -1 when out o bounds or blocked by own piece
   */
-  #highlightMoveOption(col, row, color) {
+  #checkMoveOption(col, row, color) {
 
     // detect board bounds
     if(col < 0 || row < 0 || col > 7 || row > 7) {
@@ -160,12 +159,11 @@ export default class Board {
     // that a blocking piece was hit
     if(field.piece !== null) {
       if(field.color != color) {
-        field.highlighted = true;
+        return 1;
       }
       return -1;
     }
 
-    field.highlighted = true;
     return 0;
   }
 
@@ -188,14 +186,13 @@ export default class Board {
   }
 
   /**
-  * Draws a highlighting on the fields where the rook can move.
+  * Returns highlighting on the fields where the rook can move.
   *
-  * @param board: the array board structure to draw the highlighting in
   * @param knight: an html div from the board, where the knight stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the fields, the knight can move to
   */
-  #drawKnightMoveOptions(knight) {
+  #getKnightMoveOptions(knight) {
     const moveOptions = [
       {row: 2, col: 1},
       {row: 1, col: 2},
@@ -207,196 +204,187 @@ export default class Board {
       {row: 1, col: -2}
     ];
 
+    // check all move options
+    let moves = [];
     for(let move of moveOptions) {
       let newRow = knight.row + move.row;
       let newCol = knight.col + move.col;
 
-      this.#highlightMoveOption(newCol, newRow, knight.color);
+      // check if own pieces are blocking the move or out of bounds
+      if(this.#checkMoveOption(newCol, newRow, knight.color) != -1) {
+        moves.push(this.#fields[newCol][newRow]);
+      }
     }
 
-    return 0;
+    return moves;
   }
 
   /**
-  * Draws a highlighting on the fields where the bishop can move.
+  * Returns the fields where the bishop can move.
   *
-  * @param board: the array board structure to draw the highlighting in
-  * @param bishop: an html div from the board, where the bishop stands
+  * @param bishop: a field on the board, where the bishop stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the move options
   */
-  #drawBishopMoveOptions(bishop) {
+  #getBishopMoveOptions(bishop) {
     // go diagonally into all 4 directions
-    for(let r = bishop.row+1, c = bishop.col+1;; r++, c++){
-      let success = this.#highlightMoveOption(c, r, bishop.color);
-      if(success !== 0) {
+    let moves = [];
+    for(let row = bishop.row+1, column = bishop.col+1;; row++, column++){
+      let success = this.#checkMoveOption(column, row, bishop.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let r = bishop.row-1, c = bishop.col+1;; r--, c++){
-      let success = this.#highlightMoveOption(c, r, bishop.color);
-      if(success !== 0) {
+    for(let row = bishop.row-1, column = bishop.col+1;; row--, column++){
+      let success = this.#checkMoveOption(column, row, bishop.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let r = bishop.row-1, c = bishop.col-1;; r--, c--){
-      let success = this.#highlightMoveOption(c, r, bishop.color);
-      if(success !== 0) {
+    for(let row = bishop.row-1, column = bishop.col-1;; row--, column--) {
+      let success = this.#checkMoveOption(column, row, bishop.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let r = bishop.row+1, c = bishop.col-1;; r++, c--){
-      let success = this.#highlightMoveOption(c, r, bishop.color);
-      if(success !== 0) {
+    for(let row = bishop.row+1, column = bishop.col-1;; row++, column--) {
+      let success = this.#checkMoveOption(column, row, bishop.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][row])
+      }
+      if(success != 0) {
         break;
       }
     }
 
-    return 0;
+    return moves;
   }
 
   /**
-  * Draws a highlighting on the fields where the queen can move.
+  * Returns the fields where the queen can move.
   *
-  * @param board: the array board structure to draw the highlighting in
-  * @param queen: an html div from the board, where the queen stands
+  * @param queen: a field, where the queen stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the move options
   */
-  #drawQueenMoveOptions(queen) {
-    // go horizontally and vertically into all 4 directions
-    for(let r = queen.row+1;; r++) {
-      let success = this.#highlightMoveOption(queen.col, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let r = queen.row-1;; r--) {
-      let success = this.#highlightMoveOption(queen.col, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let c = queen.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, queen.row, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let c = queen.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, queen.row, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    // go diagonally into all 4 directions
-    for(let r = queen.row+1, c = queen.col+1;; r++, c++){
-      let success = this.#highlightMoveOption(c, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let r = queen.row-1, c = queen.col+1;; r--, c++){
-      let success = this.#highlightMoveOption(c, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let r = queen.row-1, c = queen.col-1;; r--, c--){
-      let success = this.#highlightMoveOption(c, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
-    for(let r = queen.row+1, c = queen.col-1;; r++, c--){
-      let success = this.#highlightMoveOption(c, r, queen.color);
-      if(success !== 0) {
-        break;
-      }
-    }
+  #getQueenMoveOptions(queen) {
+    let rookMoves = this.#getRookMoveOptions(queen);
+    let bishopMoves = this.#getBishopMoveOptions(queen);
 
-    return 0;
+    return rookMoves.concat(bishopMoves);
   }
 
   /**
   * Draws a highlighting on the fields where the pawn can move.
   *
-  * @param board: the array board structure to draw the highlighting in
-  * @param pawn: an html div from the board, where the pawn stands
+  * @param pawn: a field from the board, where the pawn stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the move options
   */
-  #drawPawnMoveOptions(pawn) {
+  #getPawnMoveOptions(pawn) {
     let direction = (pawn.color == "white")? 1 : -1;
     let isStartPos = (pawn.color == "white" && pawn.row === 1 
                  || pawn.color == "black" && pawn.row === 6);
 
-    this.#highlightMoveOption(pawn.col, pawn.row + direction, pawn.color);
-    if(isStartPos) {
-      this.#highlightMoveOption(pawn.col, pawn.row + 2*direction, pawn.color);
+    let moves = [];
+    let success = this.#checkMoveOption(pawn.col, pawn.row + direction, pawn.color);
+    if(success === 0) {
+      moves.push(this.#fields[pawn.col][pawn.row + direction]);
+    }
+    // check for starting double jump
+    if(success == 0 && isStartPos) {
+      success = this.#checkMoveOption(pawn.col, pawn.row + 2*direction, pawn.color);
+      if(success === 0) {
+        moves.push(this.#fields[pawn.col][pawn.row + 2*direction]);
+      }
     }
 
-    return 0;
+    return moves;
   }
 
   /**
-  * Draws a highlighting on the fields where the king can move.
+  * Returns the fields where the king can move.
   *
-  * @param board: the array board structure to draw the highlighting in
-  * @param king: an html div from the board, where the king stands
+  * @param king: an field on the board, where the king stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the move options
   */
-  #drawKingMoveOptions(king) {
-    for(let c = -1; c<=1; c++) {
-      for(let r = -1; r<=1; r++) {
-        // don't highlight the kings own position
-        if(c === 0 && r === 0) {
+  #getKingMoveOptions(king) {
+    let moves = [];
+    for(let horizontalDirection = -1; horizontalDirection<=1; horizontalDirection++) {
+      for(let verticalDirection = -1; verticalDirection<=1; verticalDirection++) {
+        // don't return the kings own position
+        if(horizontalDirection === 0 && verticalDirection === 0) {
           continue;
         }
 
-        this.#highlightMoveOption(king.col + c, king.row + r, king.color);
+        let success = this.#checkMoveOption(king.col + horizontalDirection, king.row + verticalDirection, king.color);
+        if(success >= 0) {
+          moves.push(this.fields[king.col + horizontalDirection][king.row + verticalDirection])
+        }
       }
     }
 
-    return 0;
+    return moves;
   }
+
   /**
-  * Draws a highlighting on the fields where the rook can move.
+  * Returns the fields where the rook can move.
   *
-  * @param board: the array board structure to draw the highlighting in
-  * @param rook: an html div from the board, where the rook stands
+  * @param rook: an field on the board, where the rook stands
   *
-  * @returns: 0 on success, -1 on error
+  * @returns: an array containing the move options
   */
-  #drawRookMoveOptions(rook) {
-    // go into all 4 directions from the rooks position and place highlights
-    for(let r = rook.row+1;; r++) {
-      let success = this.#highlightMoveOption(rook.col, r, rook.color);
-      if(success !== 0) {
+  #getRookMoveOptions(rook) {
+    let moves = [];
+    // go horizontally and vertically into all 4 directions
+    for(let row = rook.row+1;; row++) {
+      let success = this.#checkMoveOption(rook.col, row, rook.color);
+      if(success >= 0) {
+        moves.push(this.#fields[rook.col][row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let r = rook.row-1;; r--) {
-      let success = this.#highlightMoveOption(rook.col, r, rook.color);
-      if(success !== 0) {
+    for(let row = rook.row-1;; row--) {
+      let success = this.#checkMoveOption(rook.col, row, rook.color);
+      if(success >= 0) {
+        moves.push(this.#fields[rook.col][row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let c = rook.col+1;; c++) {
-      let success = this.#highlightMoveOption(c, rook.row, rook.color);
-      if(success !== 0) {
+    for(let column = rook.col+1;; column++) {
+      let success = this.#checkMoveOption(column, rook.row, rook.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][rook.row])
+      }
+      if(success != 0) {
         break;
       }
     }
-    for(let c = rook.col-1;; c--) {
-      let success = this.#highlightMoveOption(c, rook.row, rook.color);
-      if(success !== 0) {
+    for(let column = rook.col-1;; column--) {
+      let success = this.#checkMoveOption(column, rook.row, rook.color);
+      if(success >= 0) {
+        moves.push(this.#fields[column][rook.row])
+      }
+      if(success != 0) {
         break;
       }
     }
 
-    return 0;
+    return moves;
   }
 
   /**
@@ -446,29 +434,37 @@ export default class Board {
    * @returns: 0 if highlighting was successful, -1 if no piece found or piece type undefined
    */
   #highlightMoveOptions(field) {
-    let success = -1;
 
+    // get the move options as array of fields
+    let moveOptions;
     switch(field.piece) {
       case 'rook':
-        success = this.#drawRookMoveOptions(field);
+        moveOptions = this.#getRookMoveOptions(field);
         break;
       case 'knight':
-        success = this.#drawKnightMoveOptions(field);
+        moveOptions = this.#getKnightMoveOptions(field);
         break;
       case 'bishop':
-        success = this.#drawBishopMoveOptions(field);
+        moveOptions = this.#getBishopMoveOptions(field);
         break;
       case 'queen':
-        success = this.#drawQueenMoveOptions(field);
+        moveOptions = this.#getQueenMoveOptions(field);
         break;
       case 'king':
-        success = this.#drawKingMoveOptions(field);
+        moveOptions = this.#getKingMoveOptions(field);
         break;
       case 'pawn':
-        success = this.#drawPawnMoveOptions(field);
+        moveOptions = this.#getPawnMoveOptions(field);
         break;
+      default:
+        return -1;
     }
-    return success;
+
+    // apply the highlight on the move options
+    for(let option of moveOptions) {
+      this.#fields[option.col][option.row].highlighted = true;
+    }
+    return 0;
  }
 
   /**
