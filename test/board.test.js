@@ -252,6 +252,89 @@ describe("tests pawn behaviour", () => {
       checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
     }
   });
+
+  it("can be moved from the starting position", () => {
+    let ret = board.movePiece("A2", "A3");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedSelected = null;
+    let expectedHighlight = [];
+    let expectedPieces = [ 
+      {id: "A3", piece: "pawn", color: "white"},
+      {id: "A2", piece: null, color: null},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    // double move
+    ret = board.movePiece("E7", "E5");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedSelected = null;
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: "E5", piece: "pawn", color: "black"},
+      {id: "E7", piece: null, color: null},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    //move opposite to black
+    ret = board.movePiece("E2", "E4");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedSelected = null;
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: "E4", piece: "pawn", color: "white"},
+      {id: "E2", piece: null, color: null},
+    ];
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+    
+    // blacks e-pawn cannot move
+    ret = board.movePiece("E5", "E4");
+    expect(ret).toBe(-1);
+
+    // random black move
+    ret = board.movePiece("H7", "H6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedSelected = null;
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: "H6", piece: "pawn", color: "black"},
+      {id: "H7", piece: null, color: null},
+    ];
+
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    // whites a pawn can move again
+    ret = board.movePiece("A3", "A4");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedSelected = null;
+    expectedHighlight = [];
+    expectedPieces = [ 
+      {id: "A4", piece: "pawn", color: "white"},
+      {id: "A3", piece: null, color: null},
+    ];
+
+    checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+  });
 });
 
 describe("tests knight behaviour", () => {
@@ -263,7 +346,6 @@ describe("tests knight behaviour", () => {
   })
 
   it("shows correct starting move options", () => {
-
     // knight on b1
     let ret = board.selectPiece('B1')
     expect(ret).toBe(0);
@@ -328,6 +410,66 @@ describe("tests knight behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
   });
+  it("can move around", () => {
+    // Nc3
+    let ret = board.movePiece("B1", "C3");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedPieces = [ 
+      {id: "C3", piece: "knight", color: "white"},
+      {id: "B1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Nf6
+    ret = board.movePiece("G8", "F6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "F6", piece: "knight", color: "black"},
+      {id: "G8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Na4
+    ret = board.movePiece("C3", "A4");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "A4", piece: "knight", color: "white"},
+      {id: "C3", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Nc6
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "C6", piece: "knight", color: "black"},
+      {id: "B8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Nb2, impossible because of pawn
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(-1);
+    // Ng3, impossible because of movement options
+    ret = board.movePiece("G1", "G3");
+    expect(ret).toBe(-1);
+  });
 });
 
 describe("tests rook behaviour", () => {
@@ -382,6 +524,74 @@ describe("tests rook behaviour", () => {
       {id: expectedSelected, piece: "rook", color: "black"},
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+
+  it("moves around", () => {
+    // bring pawn out of the way
+    board.movePiece("A2", "A4");
+    board.movePiece("H7", "H5");
+    // Ra3
+    let ret = board.movePiece("A1", "A3");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedPieces = [ 
+      {id: "A3", piece: "rook", color: "white"},
+      {id: "A1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Rh6
+    ret = board.movePiece("H8", "H6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "H6", piece: "rook", color: "black"},
+      {id: "H8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Rc3
+    ret = board.movePiece("A3", "C3");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "C3", piece: "rook", color: "white"},
+      {id: "A3", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Rc6
+    ret = board.movePiece("H6", "C6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "C6", piece: "rook", color: "black"},
+      {id: "H6", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // impossible moves
+    // Rd4, diagonal move
+    ret = board.movePiece("C3", "D4");
+    expect(ret).toBe(-1);
+    // Rc7, move over a enemy piece
+    ret = board.movePiece("C3", "C7");
+    expect(ret).toBe(-1);
+    // RC2, blocked by own piece
+    ret = board.movePiece("C3", "C2");
+    expect(ret).toBe(-1);
   });
 });
 
@@ -438,6 +648,74 @@ describe("tests bishop behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
   });
+
+  it("moves around", () => {
+    // bring pawns out of the way
+    board.movePiece("E2", "E4");
+    board.movePiece("E7", "E5");
+    // Bc4
+    let ret = board.movePiece("F1", "C4");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedPieces = [ 
+      {id: "C4", piece: "bishop", color: "white"},
+      {id: "F1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Bd6
+    ret = board.movePiece("F8", "D6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "D6", piece: "bishop", color: "black"},
+      {id: "F8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Be6
+    ret = board.movePiece("C4", "E6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "E6", piece: "bishop", color: "white"},
+      {id: "C4", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Be7
+    ret = board.movePiece("D6", "E7");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "E7", piece: "bishop", color: "black"},
+      {id: "D6", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // impossible moves
+    // Bf6, non-diagonal move
+    ret = board.movePiece("E6", "F6");
+    expect(ret).toBe(-1);
+    // Bg8, move over a enemy piece
+    ret = board.movePiece("E6", "G8");
+    expect(ret).toBe(-1);
+    // Ba2, blocked by own piece
+    ret = board.movePiece("E6", "A2");
+    expect(ret).toBe(-1);
+  });
 });
 
 describe("tests queen behaviour", () => {
@@ -470,6 +748,74 @@ describe("tests queen behaviour", () => {
       {id: expectedSelected, piece: "queen", color: "black"},
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+
+  it("moves around", () => {
+    // bring pawns out of the way
+    board.movePiece("E2", "E4");
+    board.movePiece("E7", "E5");
+    // Qe2
+    let ret = board.movePiece("D1", "E2");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedPieces = [ 
+      {id: "E2", piece: "queen", color: "white"},
+      {id: "D1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Qg5
+    ret = board.movePiece("D8", "G5");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "G5", piece: "queen", color: "black"},
+      {id: "D8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Qe3
+    ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "E3", piece: "queen", color: "white"},
+      {id: "E2", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Qg3
+    ret = board.movePiece("G5", "G3");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "G3", piece: "queen", color: "black"},
+      {id: "G5", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // impossible moves
+    // Qg4, not a move option
+    ret = board.movePiece("E3", "G4");
+    expect(ret).toBe(-1);
+    // Qh3, move over an enemy piece
+    ret = board.movePiece("E3", "H3");
+    expect(ret).toBe(-1);
+    // Qc1, blocked by own piece
+    ret = board.movePiece("E3", "C1");
+    expect(ret).toBe(-1);
   });
 });
 
@@ -504,5 +850,70 @@ describe("tests king behaviour", () => {
       {id: expectedSelected, piece: "king", color: "black"},
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+  });
+
+  it("moves around", () => {
+    // bring pawns out of the way
+    board.movePiece("E2", "E4");
+    board.movePiece("D7", "D5");
+    // Ke2
+    let ret = board.movePiece("E1", "E2");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    let expectedPieces = [ 
+      {id: "E2", piece: "king", color: "white"},
+      {id: "E1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Kd7
+    ret = board.movePiece("E8", "D7");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "D7", piece: "king", color: "black"},
+      {id: "E8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Kd3
+    ret = board.movePiece("E2", "D3");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "D3", piece: "king", color: "white"},
+      {id: "E2", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // .., Kd6
+    ret = board.movePiece("D7", "D6");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "D6", piece: "king", color: "black"},
+      {id: "D7", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // impossible moves
+    // Kf3, not a move option
+    ret = board.movePiece("D3", "F3");
+    expect(ret).toBe(-1);
+    // Ke4, blocked by own piece
+    ret = board.movePiece("D3", "E4");
+    expect(ret).toBe(-1);
   });
 });

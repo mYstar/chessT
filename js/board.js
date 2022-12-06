@@ -108,12 +108,12 @@ export default class Board {
 
   /**
    * Takes a chessboard field notation (e.g. "A1") and translates it into a
-   * row and column index for the fields matrix.
+   * field from the chessboard structure.
    *
    * @param notation: the field notation to parse
-   * @returns: an object {col: colN, row: rowN} containing the indexes
+   * @returns: an field or undefined when the notation is incorrect
    */
-  #matrixNotationToIdx(notation) {
+  #notationToField(notation) {
     if(notation.length !== 2) {
       return undefined;
     }
@@ -131,7 +131,7 @@ export default class Board {
       return undefined;
     }
 
-    return {col: col, row: row};
+    return this.#fields[col][row];
   }
 
   /**
@@ -165,6 +165,90 @@ export default class Board {
     }
 
     return 0;
+  }
+
+  /**
+   * Get the move options for a piece on a specific field.
+   * 
+   * @param field: the field to search for the piece
+   * @returns: an array of fields the piece can move to,
+*             [] when the piece is unknown or none present 
+   */
+  #getMoveOptions(field) {
+
+    // get the move options as array of fields
+    let moveOptions;
+    switch(field.piece) {
+      case 'rook':
+        moveOptions = this.#getRookMoveOptions(field);
+        break;
+      case 'knight':
+        moveOptions = this.#getKnightMoveOptions(field);
+        break;
+      case 'bishop':
+        moveOptions = this.#getBishopMoveOptions(field);
+        break;
+      case 'queen':
+        moveOptions = this.#getQueenMoveOptions(field);
+        break;
+      case 'king':
+        moveOptions = this.#getKingMoveOptions(field);
+        break;
+      case 'pawn':
+        moveOptions = this.#getPawnMoveOptions(field);
+        break;
+      default:
+        return [];
+    }
+
+    return moveOptions;
+  }
+
+  /**
+  * Moves a piece from one field to the other in the internal board structure
+  *
+  * @param fromField: the field where the piece stands now
+  * @param toField: the field where the piece moves to
+  *
+  * @returns: 0 if the move was successful
+  *          -1 when the move is not possible (out of bounds, blocked or not a move option)
+  */
+  #movePieceToField(fromField, toField) {
+    // check if move is possible
+    let moveOptions = this.#getMoveOptions(fromField);
+    if(moveOptions.find(field => field === toField) === undefined) {
+      return -1;
+    }
+
+    // move piece values
+    toField.piece = fromField.piece;
+    toField.color = fromField.color;
+    fromField.piece = null;
+    fromField.color = null;
+
+    return 0;
+  }
+
+  /**
+  * Moves a piece from one field to the other in the internal board structure
+  *
+  * @param fromFieldNotation: the chess notation (e.g. 'A1') of the field 
+  *         where the piece stands now
+  * @param toFieldNotation: the chess notation (e.g. 'B2') of the field
+  *         where the piece moves to
+  *
+  * @returns: 0 if the move was successful
+  *          -1 when the move is not possible (out of bounds, blocked or not a move option)
+  */
+  movePiece(fromFieldNotation, toFieldNotation) {
+    let fromField = this.#notationToField(fromFieldNotation);
+    let toField = this.#notationToField(toFieldNotation);
+
+    if(fromField === undefined || toField === undefined) {
+      return -1;
+    }
+
+    return this.#movePieceToField(fromField, toField);
   }
 
   /**
@@ -329,7 +413,7 @@ export default class Board {
 
         let success = this.#checkMoveOption(king.col + horizontalDirection, king.row + verticalDirection, king.color);
         if(success >= 0) {
-          moves.push(this.fields[king.col + horizontalDirection][king.row + verticalDirection])
+          moves.push(this.#fields[king.col + horizontalDirection][king.row + verticalDirection])
         }
       }
     }
@@ -399,11 +483,10 @@ export default class Board {
     // --- 1. ---
     this.#removeHighlights();
 
-    let indexes = this.#matrixNotationToIdx(notation);
-    if( indexes === undefined ) {
+    let field = this.#notationToField(notation);
+    if( field === undefined ) {
       return undefined;
     }
-    let field = this.#fields[indexes.col][indexes.row]
 
     // remove the old marking
     if(this.#currentPiece !== undefined) {
@@ -436,36 +519,14 @@ export default class Board {
   #highlightMoveOptions(field) {
 
     // get the move options as array of fields
-    let moveOptions;
-    switch(field.piece) {
-      case 'rook':
-        moveOptions = this.#getRookMoveOptions(field);
-        break;
-      case 'knight':
-        moveOptions = this.#getKnightMoveOptions(field);
-        break;
-      case 'bishop':
-        moveOptions = this.#getBishopMoveOptions(field);
-        break;
-      case 'queen':
-        moveOptions = this.#getQueenMoveOptions(field);
-        break;
-      case 'king':
-        moveOptions = this.#getKingMoveOptions(field);
-        break;
-      case 'pawn':
-        moveOptions = this.#getPawnMoveOptions(field);
-        break;
-      default:
-        return -1;
-    }
+    let moveOptions = this.#getMoveOptions(field);
 
     // apply the highlight on the move options
     for(let option of moveOptions) {
       this.#fields[option.col][option.row].highlighted = true;
     }
     return 0;
- }
+  }
 
   /**
    * @returns: the changes made to the board since the last call of this function
