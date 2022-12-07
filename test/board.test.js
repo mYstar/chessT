@@ -198,6 +198,41 @@ describe("tests board starting configuration", () => {
   });
 });
 
+describe("tests move order", () => {
+  it("no player can move twice in a row", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    // first move is ok
+    let ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+    // white can not move any more
+    ret = board.movePiece("E3", "E4");
+    expect(ret).toBe(-1);
+    // also with 2nd try
+    ret = board.movePiece("E3", "E4");
+    expect(ret).toBe(-1);
+
+    // blacks move
+    ret = board.movePiece("E7", "E6");
+    expect(ret).toBe(0);
+    // black can not move any more
+    ret = board.movePiece("E6", "E5");
+    expect(ret).toBe(-1);
+    // also with 2nd try
+    ret = board.movePiece("E6", "E5");
+    expect(ret).toBe(-1);
+  });
+
+  it("black cannot move first", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    let ret = board.movePiece("E7", "E6");
+    expect(ret).toBe(-1);
+  });
+});
+
 describe("tests pawn behaviour", () => {
   let board;
 

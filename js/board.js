@@ -1,6 +1,9 @@
 export default class Board {
   // stores the field, where the current selected piece is placed.
   #currentPiece = undefined;
+  // stores the color of the player that did the last move
+  // initialized with black, so black can not move first
+  #lastPlayerMove = "black";
   // contains all the 64 fields the board consists of
   // [[A1], [A2], [A3], ... , [A8]],
   // [[B1], [B2], [B3], ... , [B8]],
@@ -219,6 +222,12 @@ export default class Board {
     if(moveOptions.find(field => field === toField) === undefined) {
       return -1;
     }
+    // check if move order is correct
+    if(this.#lastPlayerMove == fromField.color) {
+      return -1;
+    }
+    // update last moving player
+    this.#lastPlayerMove = fromField.color;
 
     // move piece values
     toField.piece = fromField.piece;
