@@ -208,7 +208,8 @@ export default class Board {
   }
 
   /**
-  * Moves a piece from one field to the other in the internal board structure
+  * Moves a piece from one field to the other in the internal board structure.
+  * Also removes all highlighing and selection on the board.
   *
   * @param fromField: the field where the piece stands now
   * @param toField: the field where the piece moves to
@@ -234,6 +235,10 @@ export default class Board {
     toField.color = fromField.color;
     fromField.piece = null;
     fromField.color = null;
+    fromField.selected = false;
+
+    // remove all selections
+    this.#removeHighlights();
 
     return 0;
   }

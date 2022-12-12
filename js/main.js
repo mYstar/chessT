@@ -64,18 +64,18 @@ let changeFieldInHtml = function(
     return -1;
   }
 
-  // perform changes on the piece
-  if(piece != undefined && color != undefined) {
-    // get old piece
-    let oldPiece = field.getElementsByClassName("black");
-    if(oldPiece.length > 0) {
-      oldPiece.item(0).remove();
-    }
-    oldPiece = field.getElementsByClassName("white");
-    if(oldPiece.length > 0) {
-      oldPiece.item(0).remove();
-    }
+  // remove old piece
+  let oldPiece = field.getElementsByClassName("black");
+  if(oldPiece.length > 0) {
+    oldPiece.item(0).remove();
+  }
+  oldPiece = field.getElementsByClassName("white");
+  if(oldPiece.length > 0) {
+    oldPiece.item(0).remove();
+  }
 
+  // add new piece if present
+  if(piece != undefined && color != undefined) {
     field.innerHTML += '<img class="'
     + piece 
     + ' '
@@ -117,6 +117,78 @@ let changeFieldInHtml = function(
     oldHighlight.item(0).remove();
   }
 }
+
+/**
+ * Moves a piece on the HTML board by:
+ * 1. moving the piece on the internal board structure.
+ * 2. reading the changes from the internal board
+ * 3. performing the changes
+ * 4. adding event listeners to the moved piece
+ *
+ * @param board: the html board in the DOM to change
+ * @param fromField: the field to move the piece away from
+ * @param toField: the field to move the piece to
+ */
+var movePieceInHTML = function(board, fromField, toField) {
+  let fromFieldId = fromField.getAttribute('id');
+  let toFieldId = toField.getAttribute('id');
+  // -- 1. -- move the piece
+  board.movePiece(fromFieldId, toFieldId);
+
+  // -- 2. -- get the changes
+  let changes = board.getBoardChanges();
+
+  // -- 3. -- perform changes in html
+  for(let changedId in changes) {
+    let change = changes[changedId];
+    changeFieldInHtml(
+      changedId,
+      change.piece,
+      change.color,
+      change.selected, 
+      change.highlighted);
+  }
+
+  // -- 4. -- add event listeners
+  toField.onclick = function() { highlightPieceInHTML(board, toField); };
+}
+
+/**
+ * Highlights a piece on the HTML board by:
+ * 1. selecting the piece on the internal board structure.
+ * 2. reading the changes from the internal board
+ * 3. performing the changes
+ * 4. adding event listeners to the highlighted fields
+ *
+ * @param board: the html board in the DOM to change
+ * @param field: the field on the board to highlight
+ */
+var highlightPieceInHTML = function(board, field) {
+  let fieldId = field.getAttribute('id');
+
+  // -- 1. -- selecting
+  board.selectPiece(fieldId);
+
+  // -- 2. -- reading changes
+  let changes = board.getBoardChanges();
+  for(let changedId in changes) {
+    let change = changes[changedId];
+    // -- 3. -- change the html board
+    changeFieldInHtml(
+      changedId,
+      change.piece,
+      change.color,
+      change.selected, 
+      change.highlighted);
+
+    // -- 4. -- set onclick handlers for highlights
+    if(change.highlighted) {
+      let toField = document.getElementById(changedId);
+      toField.onclick = function() { movePieceInHTML(board, field, toField); };
+    }
+  }
+}
+
 
 var init = function() {
   // --- create datastructures ---
@@ -163,22 +235,10 @@ var init = function() {
 
   let fields = document.getElementsByClassName('field');
   // make pieces clickable
-  for(let i = 0; i<fields.length; i++) {
-    fields.item(i).onclick = function() {
-      board.selectPiece(this.getAttribute('id'));
-      let changes = board.getBoardChanges()
-      for(let id in changes) {
-        let change = changes[id];
-        changeFieldInHtml(
-          id,
-          change.piece,
-          change.color,
-          change.selected, 
-          change.highlighted);
-      }
-    }
+  for(let field of fields) {
+    field.onclick = function() { highlightPieceInHTML(board, field) };
   }
 }
 
-var currentMove = undefined;
+let currentMove = undefined;
 init();
