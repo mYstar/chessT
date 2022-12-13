@@ -32,10 +32,10 @@ let checkChanges = function(changes, expectedSelected, expectedHighlight, expect
 describe("tests board starting configuration", () => {
   it("checks that no out of bounds field can be selected", () => {
     let board = new Board();
-    expect(board.selectPiece('testing')).toBe(undefined);
-    expect(board.selectPiece('A0')).toBe(undefined);
-    expect(board.selectPiece('A9')).toBe(undefined);
-    expect(board.selectPiece('I1')).toBe(undefined);
+    expect(board.selectPiece('testing')).toBe(-1);
+    expect(board.selectPiece('A0')).toBe(-1);
+    expect(board.selectPiece('A9')).toBe(-1);
+    expect(board.selectPiece('I1')).toBe(-1);
   });
 
   it("checks that piece detection works", () => {
@@ -198,7 +198,25 @@ describe("tests board starting configuration", () => {
   });
 });
 
-describe("tests move order", () => {
+describe("move rules", () => {
+  it("rejects impossible moves", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    let ret = board.movePiece("from", "A3");
+    expect(ret).toBe(-1);
+    ret = board.movePiece("A2", "towards");
+    expect(ret).toBe(-1);
+    ret = board.movePiece("A2", "B3");
+    expect(ret).toBe(-1);
+    // Rook cannot move from start
+    ret = board.movePiece("A1", "A3");
+    expect(ret).toBe(-1);
+    // no piece to move on the field
+    ret = board.movePiece("A4", "A5");
+    expect(ret).toBe(-1);
+  });
+
   it("no player can move twice in a row", () => {
     let board = new Board();
     board.setStartingConfiguration();
@@ -230,6 +248,26 @@ describe("tests move order", () => {
 
     let ret = board.movePiece("E7", "E6");
     expect(ret).toBe(-1);
+  });
+
+  it("only active player can be highlighted", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    // black cannot be selected first
+    let ret = board.selectPiece("A8");
+    expect(ret).toBe(-1);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(0);
+    checkChanges(changes, null, [], []);
+
+    // white cannot be selected on blacks turn
+    board.movePiece("A2", "A3");
+    ret = board.selectPiece("B2");
+    expect(ret).toBe(-1);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(0);
+    checkChanges(changes, null, [], []);
   });
 });
 
@@ -266,6 +304,8 @@ describe("tests pawn behaviour", () => {
     }
 
     // check all the black pawns
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
     for(let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']) {
       let start = col + '7';
       let sel1 = col + '6';
@@ -413,6 +453,8 @@ describe("tests knight behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
 
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
     // knight on g8
     ret = board.selectPiece('G8')
     expect(ret).toBe(0);
@@ -538,6 +580,9 @@ describe("tests rook behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
 
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
+
     ret = board.selectPiece('A8')
     expect(ret).toBe(0);
     changes = board.getBoardChanges(); 
@@ -661,6 +706,9 @@ describe("tests bishop behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
 
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
+
     ret = board.selectPiece('C8')
     expect(ret).toBe(0);
     changes = board.getBoardChanges(); 
@@ -773,6 +821,9 @@ describe("tests queen behaviour", () => {
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
 
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
+
     ret = board.selectPiece('D8')
     expect(ret).toBe(0);
     changes = board.getBoardChanges(); 
@@ -874,6 +925,9 @@ describe("tests king behaviour", () => {
       {id: expectedSelected, piece: "king", color: "white"},
     ];
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+
+    // move a piece, to enable blacks move
+    board.movePiece("A2", "A3");
 
     ret = board.selectPiece('E8')
     expect(ret).toBe(0);

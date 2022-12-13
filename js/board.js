@@ -491,7 +491,7 @@ export default class Board {
    * the new one.
    *
    * @param notation: the column-row string (e.g. "A1") where the piece stands
-   * @return: 0 if selection was successful, -1 if no piece found
+   * @return: 0 if selection was successful, -1 if no piece found or notation wrong
    */
   selectPiece(notation) {
     // --- 1. ---
@@ -499,7 +499,7 @@ export default class Board {
 
     let field = this.#notationToField(notation);
     if( field === undefined ) {
-      return undefined;
+      return -1;
     }
 
     // remove the old marking
@@ -509,6 +509,11 @@ export default class Board {
 
     // check if there is a piece on the field
     if(field.piece === null) {
+      this.#currentPiece = undefined;
+      return -1;
+    }
+    // check if its the players turn
+    if(this.#lastPlayerMove === field.color) {
       this.#currentPiece = undefined;
       return -1;
     }

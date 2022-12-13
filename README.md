@@ -2,7 +2,7 @@
 
 This is a little side project of mine, sharpening my webdev skills. 
 It shows a responsive web page (Desktop and Tablet size for now), with a chessboard and a game in chess notation displayed.
-Currently there is only some visual functionality, showing move options for the chess pieces, clicking through the game, responding on window resize.
+Currently there is only some visual functionality, showing move options for the chess pieces, move the selected piece by clicking the move option, clicking through the game, responding on window resize.
 As of now the following technologies are used:
 
 - HTML
