@@ -271,6 +271,100 @@ describe("move rules", () => {
   });
 });
 
+describe("capture rules", () => {
+  it("all pieces (except pawns) can capture in their move directions", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    // Nc3
+    let ret = board.movePiece("B1", "C3");
+    expect(ret).toBe(0);
+    // .., d5;
+    ret = board.movePiece("D7", "D5");
+    expect(ret).toBe(0);
+    // .., d5;
+    // Nxd5
+    ret = board.movePiece("C3", "D5");
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(5);
+
+    let expectedPieces = [ 
+      {id: "D5", piece: "knight", color: "white"},
+      {id: "B1", piece: null, color: null},
+      {id: "C3", piece: null, color: null},
+      {id: "D7", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // ..,Qxd5
+    ret = board.movePiece("D8", "D5");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(2);
+
+    expectedPieces = [ 
+      {id: "D5", piece: "queen", color: "black"},
+      {id: "D8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // a4
+    ret = board.movePiece("A2", "A4");
+    expect(ret).toBe(0);
+    // ..,Qa2
+    ret = board.movePiece("D5", "A2");
+    expect(ret).toBe(0);
+    // Rxa2
+    ret = board.movePiece("A1", "A2");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "A2", piece: "rook", color: "white"},
+      {id: "A4", piece: "pawn", color: "white"},
+      {id: "A1", piece: null, color: null},
+      {id: "D5", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // ..,Bg4
+    ret = board.movePiece("C8", "G4");
+    expect(ret).toBe(0);
+    // h3
+    ret = board.movePiece("H2", "H3");
+    expect(ret).toBe(0);
+    // ..,Bxe2
+    ret = board.movePiece("G4", "E2");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "E2", piece: "bishop", color: "black"},
+      {id: "H3", piece: "pawn", color: "white"},
+      {id: "G4", piece: null, color: null},
+      {id: "C8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // Kxe2
+    ret = board.movePiece("E1", "E2");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "E2", piece: "king", color: "white"},
+      {id: "E1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+  });
+
+  it("pawn extra capture rules", () => {
+    // --- TODO ---
+  });
+});
+
 describe("tests pawn behaviour", () => {
   let board;
 
