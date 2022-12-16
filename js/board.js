@@ -1,15 +1,16 @@
 export default class Board {
   // stores the field, where the current selected piece is placed.
   #currentPiece = undefined;
-  // stores the color of the player that did the last move
-  // initialized with black, so black can not move first
-  #lastPlayerMove = "black";
   // contains all the 64 fields the board consists of
   // [[A1], [A2], [A3], ... , [A8]],
   // [[B1], [B2], [B3], ... , [B8]],
   // [[C1], [C2], [C3], ... , [C8]],
   // ...
   #fields;
+  // stores the last move for en passant detection
+  // as an object {from:field, to:field}
+  // initialized to enable whites first move
+  #lastMove = {toField: {color:"black"}};
 
   /* initializes the fields to an array containing the empty board.
    */
@@ -47,13 +48,13 @@ export default class Board {
     for(let col = 0; col < 8; col++) {
       let fieldName = this.#matrixIdxToNotation(col, 0);
       this.#fields[col][0] = {
-          id: fieldName,
-          piece: baseRow[col],
-          color: "white",
-          col: col,
-          row: 0,
-          selected: false,
-          highlighted: false,
+        id: fieldName,
+        piece: baseRow[col],
+        color: "white",
+        col: col,
+        row: 0,
+        selected: false,
+        highlighted: false,
       }
       fieldName = this.#matrixIdxToNotation(col, 1);
       this.#fields[col][1] = {
@@ -117,7 +118,7 @@ export default class Board {
    * @returns: an field or undefined when the notation is incorrect
    */
   #notationToField(notation) {
-    if(notation.length !== 2) {
+    if(typeof notation !== "string" || notation.length !== 2) {
       return undefined;
     }
     let colN = notation[0];
@@ -224,11 +225,15 @@ export default class Board {
       return -1;
     }
     // check if move order is correct
-    if(this.#lastPlayerMove == fromField.color) {
+    if(this.#lastMove.toField.color == fromField.color) {
       return -1;
     }
-    // update last moving player
-    this.#lastPlayerMove = fromField.color;
+
+    // check for en passant
+    if(fromField.piece === 'pawn' && this.#getEnPassantMove(fromField) === toField) {
+      this.#fields[toField.col][fromField.row].piece = null;
+      this.#fields[toField.col][fromField.row].color = null;
+    }
 
     // move piece values
     toField.piece = fromField.piece;
@@ -239,6 +244,8 @@ export default class Board {
 
     // remove all selections
     this.#removeHighlights();
+    // update last move
+    this.#lastMove = {fromField: fromField, toField: toField};
 
     return 0;
   }
@@ -382,9 +389,52 @@ export default class Board {
   }
 
   /**
-  * Draws a highlighting on the fields where the pawn can move.
+  * Calculates if en passant is possible for the pawn.
   *
-  * @param pawn: a field from the board, where the pawn stands
+  * @param pawn: a field on the board, where the pawn stands
+  *
+  * @returns: The position, where the pawn moves via en passant 
+  *           or null when en passant is not possible
+  */
+  #getEnPassantMove(pawn) {
+    if(pawn.color === "white" && pawn.row != 4) {
+      return null;
+    }
+    if(pawn.color === "black" && pawn.row != 3) {
+      return null;
+    }
+    // get adjaent fields
+    // the notation functions are used for boundary check
+    let rightField = this.#notationToField(this.#matrixIdxToNotation(pawn.col+1, pawn.row));
+    let leftField = this.#notationToField(this.#matrixIdxToNotation(pawn.col-1, pawn.row));
+    let direction = (pawn.color === "white") ? 1 : -1;
+    
+    if(rightField !== undefined 
+      && rightField.piece === "pawn" 
+      && rightField.color !== pawn.color
+    ) {
+      let fromField = this.#fields[pawn.col+1][pawn.row + 2*direction];
+      if(this.#lastMove.fromField === fromField && this.#lastMove.toField === rightField) {
+        return this.#fields[pawn.col+1][pawn.row + direction];
+      }
+    }
+    if(leftField !== undefined 
+      && leftField.piece === "pawn" 
+      && leftField.color !== pawn.color
+    ) {
+      let fromField = this.#fields[pawn.col-1][pawn.row + 2*direction];
+      if(this.#lastMove.fromField === fromField && this.#lastMove.toField === leftField) {
+        return this.#fields[pawn.col-1][pawn.row + direction];
+      }
+    }
+
+    return null;
+  }
+
+  /**
+  * Returns the fields where the pawn can move.
+  *
+  * @param pawn: a field on the board, where the pawn stands
   *
   * @returns: an array containing the move options
   */
@@ -404,6 +454,20 @@ export default class Board {
       if(success === 0) {
         moves.push(this.#fields[pawn.col][pawn.row + 2*direction]);
       }
+    }
+    // check for enemy pieces to capture
+    success = this.#checkMoveOption(pawn.col+1, pawn.row + direction, pawn.color);
+    if(success === 1) {
+      moves.push(this.#fields[pawn.col+1][pawn.row + direction]);
+    }
+    success = this.#checkMoveOption(pawn.col-1, pawn.row + direction, pawn.color);
+    if(success === 1) {
+      moves.push(this.#fields[pawn.col-1][pawn.row + direction]);
+    }
+    // check for en passant
+    let enPassantMove = this.#getEnPassantMove(pawn);
+    if(enPassantMove !== null) {
+      moves.push(enPassantMove);
     }
 
     return moves;
@@ -513,7 +577,7 @@ export default class Board {
       return -1;
     }
     // check if its the players turn
-    if(this.#lastPlayerMove === field.color) {
+    if(this.#lastMove.toField.color === field.color) {
       this.#currentPiece = undefined;
       return -1;
     }

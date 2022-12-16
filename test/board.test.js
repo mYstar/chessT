@@ -357,11 +357,103 @@ describe("capture rules", () => {
       {id: "E1", piece: null, color: null},
     ];
     checkChanges(changes, null, [], expectedPieces);
-
   });
 
-  it("pawn extra capture rules", () => {
-    // --- TODO ---
+  it("pawn diagonal capture rules", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    // e4
+    let ret = board.movePiece("E2", "E4");
+    expect(ret).toBe(0);
+    // ..,d5
+    ret = board.movePiece("D7", "D5");
+    expect(ret).toBe(0);
+    // xd5
+    ret = board.movePiece("E4", "D5");
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+    expect(Object.keys(changes).length).toBeGreaterThanOrEqual(5);
+
+    let expectedPieces = [ 
+      {id: "D5", piece: "pawn", color: "white"},
+      {id: "E2", piece: null, color: null},
+      {id: "D7", piece: null, color: null},
+      {id: "E4", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+    // ..,e6
+    ret = board.movePiece("E7", "E6");
+    expect(ret).toBe(0);
+    // xe6
+    ret = board.movePiece("D5", "E6");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "E6", piece: "pawn", color: "white"},
+      {id: "E7", piece: null, color: null},
+      {id: "D5", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+    // ..,xe6
+    ret = board.movePiece("F7", "E6");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "E6", piece: "pawn", color: "black"},
+      {id: "F7", piece: null, color: null},
+      {id: "D5", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+  });
+  it("en passant", () => {
+    let board = new Board();
+    board.setStartingConfiguration();
+
+    // e4
+    let ret = board.movePiece("A2", "A4");
+    expect(ret).toBe(0);
+    // ..,d5
+    ret = board.movePiece("H7", "H5");
+    expect(ret).toBe(0);
+    // e5
+    ret = board.movePiece("A4", "A5");
+    expect(ret).toBe(0);
+    // ..,f5
+    ret = board.movePiece("B7", "B5");
+    expect(ret).toBe(0);
+    // xf6
+    ret = board.movePiece("A5", "B6");
+    expect(ret).toBe(0);
+    let changes = board.getBoardChanges(); 
+
+    let expectedPieces = [ 
+      {id: "B6", piece: "pawn", color: "white"},
+      {id: "B7", piece: null, color: null},
+      {id: "B5", piece: null, color: null},
+      {id: "A5", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+    // ..,h4
+    ret = board.movePiece("H5", "H4");
+    expect(ret).toBe(0);
+    // ..,g4
+    ret = board.movePiece("G2", "G4");
+    expect(ret).toBe(0);
+    // xg3
+    ret = board.movePiece("H4", "G3");
+    expect(ret).toBe(0);
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "G3", piece: "pawn", color: "black"},
+      {id: "G4", piece: null, color: null},
+      {id: "H4", piece: null, color: null},
+      {id: "G2", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
   });
 });
 
