@@ -439,10 +439,10 @@ describe("capture rules", () => {
     // ..,h4
     ret = board.movePiece("H5", "H4");
     expect(ret).toBe(0);
-    // ..,g4
+    // g4
     ret = board.movePiece("G2", "G4");
     expect(ret).toBe(0);
-    // xg3
+    // ..,xg3
     ret = board.movePiece("H4", "G3");
     expect(ret).toBe(0);
     changes = board.getBoardChanges(); 
@@ -454,6 +454,46 @@ describe("capture rules", () => {
       {id: "G2", piece: null, color: null},
     ];
     checkChanges(changes, null, [], expectedPieces);
+    
+    // d4
+    ret = board.movePiece("D2", "D4");
+    expect(ret).toBe(0);
+
+    // ..,e6
+    ret = board.movePiece("E7", "E6");
+    expect(ret).toBe(0);
+    
+    // d5
+    ret = board.movePiece("D4", "D5");
+    expect(ret).toBe(0);
+
+    // ..,e5
+    ret = board.movePiece("E6", "E5");
+    expect(ret).toBe(0);
+    
+    // xe6 not possible because of last move not being double
+    ret = board.movePiece("D5", "E6");
+    expect(ret).toBe(-1);
+    
+    // Qd2 random move
+    ret = board.movePiece("D1", "D2");
+    expect(ret).toBe(0);
+
+    // ..,c5 get in position for en passant
+    ret = board.movePiece("C7", "C5");
+    expect(ret).toBe(0);
+    
+    // Qd3 random in between move
+    ret = board.movePiece("D2", "D3");
+    expect(ret).toBe(0);
+
+    // ..,Ke7 random in between move
+    ret = board.movePiece("E8", "E7");
+    expect(ret).toBe(0);
+    
+    // xc6 not possible because of last move not being double
+    ret = board.movePiece("D5", "C6");
+    expect(ret).toBe(-1);
   });
 });
 
@@ -466,7 +506,6 @@ describe("tests pawn behaviour", () => {
   })
 
   it("shows correct double move option on starting position", () => {
-    
     // check all the white pawns
     for(let col of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']) {
       let start = col + '2';
@@ -594,7 +633,18 @@ describe("tests pawn behaviour", () => {
     ];
 
     checkChanges(changes, expectedSelected, expectedHighlight, expectedPieces);
+    
+    // ..,h5 random move to enable white
+    ret = board.movePiece("H6", "H5");
+    expect(ret).toBe(0);
+    
+    // a5 block the double move for black
+    ret = board.movePiece("A4", "A5");
+    expect(ret).toBe(0);
 
+    // ..,a5 black cannot double move
+    ret = board.movePiece("A7", "A5");
+    expect(ret).toBe(-1);
   });
 });
 
@@ -1190,5 +1240,462 @@ describe("tests king behaviour", () => {
     // Ke4, blocked by own piece
     ret = board.movePiece("D3", "E4");
     expect(ret).toBe(-1);
+  });
+
+  it("can castle both sides", () => {
+    // try to castle
+    let ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+    // Nf3
+    ret = board.movePiece("G1", "F3");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+    // ..,Nc6
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+    // e3
+    ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+    // ..,d6
+    ret = board.movePiece("D7", "D6");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+    // Bd3
+    ret = board.movePiece("F1", "D3");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+    // ..,Be6
+    ret = board.movePiece("C8", "E6");
+    expect(ret).toBe(0);
+
+    // O-O
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+
+    let expectedPieces = [ 
+      {id: "G1", piece: "king", color: "white"},
+      {id: "F1", piece: "rook", color: "white"},
+      {id: "E1", piece: null, color: null},
+      {id: "H1", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+
+    // try to castle
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+    // .., Qd7
+    ret = board.movePiece("D8", "D7");
+    expect(ret).toBe(0);
+
+    // Re1
+    ret = board.movePiece("F1", "E1");
+    expect(ret).toBe(0);
+
+    // .., O-O-O
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(0);
+
+    changes = board.getBoardChanges(); 
+
+    expectedPieces = [ 
+      {id: "C8", piece: "king", color: "black"},
+      {id: "D8", piece: "rook", color: "black"},
+      {id: "A8", piece: null, color: null},
+      {id: "E8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
+  });
+
+  it("cannot castle when king moved", () => {
+    // Nf3
+    let ret = board.movePiece("G1", "F3");
+    expect(ret).toBe(0);
+
+    // ..,Nc6
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(0);
+
+    // e3
+    ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+
+    // ..,d6
+    ret = board.movePiece("D7", "D6");
+    expect(ret).toBe(0);
+
+    // Bd3
+    ret = board.movePiece("F1", "D3");
+    expect(ret).toBe(0);
+
+    // ..,Be6
+    ret = board.movePiece("C8", "E6");
+    expect(ret).toBe(0);
+    
+    // Ke2 moving the king
+    ret = board.movePiece("E1", "E2");
+    expect(ret).toBe(0);
+
+    // ..,Qd7
+    ret = board.movePiece("D8", "D7");
+    expect(ret).toBe(0);
+    
+    // Ke1 moving king back
+    ret = board.movePiece("E2", "E1");
+    expect(ret).toBe(0);
+
+    // ..,Kd8 moving king
+    ret = board.movePiece("E8", "D8");
+    expect(ret).toBe(0);
+    
+    // O-O try castling
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+
+    // h3 random move to enable black
+    ret = board.movePiece("H2", "H3");
+    expect(ret).toBe(0);
+
+    // ..,K28 moving king back
+    ret = board.movePiece("D8", "E8");
+    expect(ret).toBe(0);
+    
+    // h4 random move to enable black
+    ret = board.movePiece("H3", "H4");
+    expect(ret).toBe(0);
+
+    // .., O-O-O try castling
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+  });
+
+  it("cannot castle when king or pawn attack castling squares", () => {
+    // e3
+    let ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+
+    // ..,d6
+    ret = board.movePiece("D7", "D6");
+    expect(ret).toBe(0);
+
+    // Ba6
+    ret = board.movePiece("F1", "A6");
+    expect(ret).toBe(0);
+
+    // ..,Kd7
+    ret = board.movePiece("E8", "D7");
+    expect(ret).toBe(0);
+
+    // Ne2
+    ret = board.movePiece("G1", "E2");
+    expect(ret).toBe(0);
+
+    // ..,g5
+    ret = board.movePiece("G7", "G5");
+    expect(ret).toBe(0);
+    
+    // h4
+    ret = board.movePiece("H2", "H4");
+    expect(ret).toBe(0);
+
+    // ..,xh4
+    ret = board.movePiece("G5", "H4");
+    expect(ret).toBe(0);
+    
+    // g4
+    ret = board.movePiece("G2", "G4");
+    expect(ret).toBe(0);
+
+    // ..,Ke6
+    ret = board.movePiece("D7", "E6");
+    expect(ret).toBe(0);
+    
+    // g5
+    ret = board.movePiece("G4", "G5");
+    expect(ret).toBe(0);
+
+    // ..,Ke5
+    ret = board.movePiece("E6", "E5");
+    expect(ret).toBe(0);
+    
+    // g6
+    ret = board.movePiece("G5", "G6");
+    expect(ret).toBe(0);
+
+    // ..,Ke4
+    ret = board.movePiece("E5", "E4");
+    expect(ret).toBe(0);
+    
+    // g7
+    ret = board.movePiece("G6", "G7");
+    expect(ret).toBe(0);
+
+    // ..,Kf3
+    ret = board.movePiece("E4", "F3");
+    expect(ret).toBe(0);
+    
+    // a3
+    ret = board.movePiece("A2", "A3");
+    expect(ret).toBe(0);
+
+    // ..,Kg2
+    ret = board.movePiece("F3", "G2");
+    expect(ret).toBe(0);
+    
+    // O-O castling should be prevented by king
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+
+    // a4
+    ret = board.movePiece("A3", "A4");
+    expect(ret).toBe(0);
+
+    // ..,Kf3
+    ret = board.movePiece("G2", "F3");
+    expect(ret).toBe(0);
+    
+    // a5
+    ret = board.movePiece("A4", "A5");
+    expect(ret).toBe(0);
+
+    // ..,h3
+    ret = board.movePiece("H4", "H3");
+    expect(ret).toBe(0);
+    
+    // b3
+    ret = board.movePiece("B2", "B3");
+    expect(ret).toBe(0);
+
+    // ..,h2
+    ret = board.movePiece("H3", "H2");
+    expect(ret).toBe(0);
+    
+    // O-O castling should be prevented by pawn
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+  });
+
+  it("cannot castle when rook moved", () => {
+    // Nf3
+    let ret = board.movePiece("G1", "F3");
+    expect(ret).toBe(0);
+
+    // ..,Nc6
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(0);
+
+    // e3
+    ret = board.movePiece("E2", "E3");
+    expect(ret).toBe(0);
+
+    // ..,d6
+    ret = board.movePiece("D7", "D6");
+    expect(ret).toBe(0);
+
+    // Bd3
+    ret = board.movePiece("F1", "D3");
+    expect(ret).toBe(0);
+
+    // ..,Be6
+    ret = board.movePiece("C8", "E6");
+    expect(ret).toBe(0);
+    
+    // h3
+    ret = board.movePiece("H2", "H3");
+    expect(ret).toBe(0);
+
+    // ..,Qd7
+    ret = board.movePiece("D8", "D7");
+    expect(ret).toBe(0);
+
+    // Rh2 moving rook
+    ret = board.movePiece("H1", "H2");
+    expect(ret).toBe(0);
+
+    // ..,a5
+      ret = board.movePiece("A7", "A5");
+    expect(ret).toBe(0);
+
+    // Rh1 moving rook back
+    ret = board.movePiece("H2", "H1");
+    expect(ret).toBe(0);
+
+    // ..,Ra6
+    ret = board.movePiece("A8", "A6");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E1", "G1");
+    expect(ret).toBe(-1);
+    
+    // h4 random move to give black a turn
+    ret = board.movePiece("H3", "H4");
+    expect(ret).toBe(0);
+
+    // ..,Ra8 move rook back
+    ret = board.movePiece("A6", "A8");
+    expect(ret).toBe(0);
+
+    // h5 random move to give black a turn
+    ret = board.movePiece("H4", "H5");
+    expect(ret).toBe(0);
+
+    // try to castle
+    ret = board.movePiece("E8", "C8");
+    expect(ret).toBe(-1);
+  });
+
+  it("cannot castle when attacked or castling fields attacked", () => {
+    // e4
+    let ret = board.movePiece("E2", "E4");
+    expect(ret).toBe(0);
+
+    // ..,e5
+    ret = board.movePiece("E7", "E5");
+    expect(ret).toBe(0);
+
+    // d4
+    ret = board.movePiece("D2", "D4");
+    expect(ret).toBe(0);
+
+    // ..,d5
+    ret = board.movePiece("D7", "D5");
+    expect(ret).toBe(0);
+
+    // b3
+    ret = board.movePiece("B2", "B3");
+    expect(ret).toBe(0);
+
+    // ..,g6
+    ret = board.movePiece("G7", "G6");
+    expect(ret).toBe(0);
+
+    // Na3
+    ret = board.movePiece("B1", "A3");
+    expect(ret).toBe(0);
+
+    // ..,Nh6
+    ret = board.movePiece("G8", "H6");
+    expect(ret).toBe(0);
+
+    // Qd3
+    ret = board.movePiece("D1", "D3");
+    expect(ret).toBe(0);
+
+    // ..,Be7
+    ret = board.movePiece("F8", "E7");
+    expect(ret).toBe(0);
+
+    // Bxh6
+    ret = board.movePiece("C1", "H6");
+    expect(ret).toBe(0);
+
+    // .., O-O not possible, F8 is attacked
+    ret = board.movePiece("E8", "G8");
+    expect(ret).toBe(-1);
+
+    // ..,Bg4
+    ret = board.movePiece("C8", "G4");
+    expect(ret).toBe(0);
+
+    // O-O-O not possible, D1 is attacked
+    ret = board.movePiece("E1", "C1");
+    expect(ret).toBe(-1);
+
+    // Nf3 blocking the attack
+    ret = board.movePiece("G1", "F3");
+    expect(ret).toBe(0);
+
+    // ..,Bxa3
+    ret = board.movePiece("E7", "A3");
+    expect(ret).toBe(0);
+
+    // O-O-O not possible, C1 is attacked
+    ret = board.movePiece("E1", "C1");
+    expect(ret).toBe(-1);
+
+    // Be3 freeing the attack on the F8 square
+    ret = board.movePiece("H6", "E3");
+    expect(ret).toBe(0);
+
+    // ..,f6
+    ret = board.movePiece("F7", "F6");
+    expect(ret).toBe(0);
+
+    // Qb5+ black king in check
+    ret = board.movePiece("D3", "B5");
+    expect(ret).toBe(0);
+
+    // .., O-O not possible, king is attacked
+    ret = board.movePiece("E8", "G8");
+    expect(ret).toBe(-1);
+
+    // ..,Nc6 blocking the check
+    ret = board.movePiece("B8", "C6");
+    expect(ret).toBe(0);
+
+    // Qd5 attacking G8
+    ret = board.movePiece("B5", "D5");
+    expect(ret).toBe(0);
+
+    // .., O-O not possible, G8 is attacked
+    ret = board.movePiece("E8", "G8");
+    expect(ret).toBe(-1);
+
+    // ..,Bb4+ white king in check
+    ret = board.movePiece("A3", "B4");
+    expect(ret).toBe(0);
+
+    // O-O-O not possible, king is attacked
+    ret = board.movePiece("E1", "C1");
+    expect(ret).toBe(-1);
+
+    // Bd2 blocking the check
+    ret = board.movePiece("E3", "D2");
+    expect(ret).toBe(0);
+
+    // Qxd5 removing attacker on F8
+    ret = board.movePiece("D8", "D5");
+    expect(ret).toBe(0);
+
+    // O-O-O white can finally castle
+    ret = board.movePiece("E1", "C1");
+    expect(ret).toBe(0);
+
+    // .., O-O black can finally castle
+    ret = board.movePiece("E8", "G8");
+    expect(ret).toBe(0);
+
+    let changes = board.getBoardChanges(); 
+
+    let expectedPieces = [ 
+      {id: "C1", piece: "king", color: "white"},
+      {id: "D1", piece: "rook", color: "white"},
+      {id: "E1", piece: null, color: null},
+      {id: "A1", piece: null, color: null},
+      {id: "G8", piece: "king", color: "black"},
+      {id: "F8", piece: "rook", color: "black"},
+      {id: "E8", piece: null, color: null},
+      {id: "H8", piece: null, color: null},
+    ];
+    checkChanges(changes, null, [], expectedPieces);
   });
 });

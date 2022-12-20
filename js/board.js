@@ -11,6 +11,18 @@ export default class Board {
   // as an object {from:field, to:field}
   // initialized to enable whites first move
   #lastMove = {toField: {color:"black"}};
+  // stores if the king moved since setting up the starting configuration
+  #kingMoved = {
+    white: false,
+    black: false,
+  };
+  // stores if the rook moved since setting up the starting configuration
+  #rookMoved = {
+    A1: false,
+    H1: false,
+    A8: false,
+    H8: false,
+  };
 
   /* initializes the fields to an array containing the empty board.
    */
@@ -72,13 +84,13 @@ export default class Board {
     for(let col = 0; col < 8; col++) {
       let fieldName = this.#matrixIdxToNotation(col, 7);
       this.#fields[col][7] = {
-          id: fieldName,
-          piece: baseRow[col],
-          color: "black",
-          col: col,
-          row: 7,
-          selected: false,
-          highlighted: false,
+        id: fieldName,
+        piece: baseRow[col],
+        color: "black",
+        col: col,
+        row: 7,
+        selected: false,
+        highlighted: false,
       }
       fieldName = this.#matrixIdxToNotation(col, 6);
       this.#fields[col][6] = {
@@ -91,6 +103,14 @@ export default class Board {
           highlighted: false,
       }
     }
+
+    // reset game status
+    this.#kingMoved.white = false;
+    this.#kingMoved.black = false;
+    this.#rookMoved.A1 = false;
+    this.#rookMoved.H1 = false;
+    this.#rookMoved.A8 = false;
+    this.#rookMoved.H8 = false;
   }
 
   /**
@@ -172,11 +192,51 @@ export default class Board {
   }
 
   /**
+   * Checks if a field is attacked by the other player.
+   * 
+   * @param field: the field check
+   * @param color: the color of the current player
+   * @returns: true if the field is attacked,
+   *           false otherwise
+   */
+  #isFieldAttacked(field, color) {
+    const enemyColor = (color === "white") ? "black":"white";
+    for(let column of this.#fields) {
+      for(let attacker of column) {
+        if(
+          attacker.color === enemyColor &&
+          attacker.piece !== "king" && // prevent infinite recursion
+          attacker.piece !== "pawn" && // pawns attack in a special way
+          this.#getMoveOptions(attacker).includes(field)
+        ) {
+          return true;
+        }
+        if(
+          attacker.color === enemyColor &&
+          attacker.piece === "king" && // prevent infinite recursion
+          this.#getKingAttackingOptions(attacker).includes(field)
+        ) {
+          return true;
+        }
+        if(
+          attacker.color === enemyColor &&
+          attacker.piece === "pawn" && // prevent infinite recursion
+          this.#getPawnAttackedSquares(attacker).includes(field)
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  /**
    * Get the move options for a piece on a specific field.
    * 
    * @param field: the field to search for the piece
    * @returns: an array of fields the piece can move to,
-*             [] when the piece is unknown or none present 
+   *           [] when the piece is unknown or none present 
    */
   #getMoveOptions(field) {
 
@@ -219,6 +279,7 @@ export default class Board {
   *          -1 when the move is not possible (out of bounds, blocked or not a move option)
   */
   #movePieceToField(fromField, toField) {
+    // --- check if move possible ---
     // check if move is possible
     let moveOptions = this.#getMoveOptions(fromField);
     if(moveOptions.find(field => field === toField) === undefined) {
@@ -229,10 +290,40 @@ export default class Board {
       return -1;
     }
 
+    // --- make the move ---
     // check for en passant
     if(fromField.piece === 'pawn' && this.#getEnPassantMove(fromField) === toField) {
       this.#fields[toField.col][fromField.row].piece = null;
       this.#fields[toField.col][fromField.row].color = null;
+    }
+    // check for castling
+    if(fromField.piece === 'king' && 
+      this.#getCastlingOptions(fromField).includes(toField)
+    ) {
+      // 1 for short castling, -1 for long castling
+      const direction = (toField.col - fromField.col) / 2;
+      console.assert(
+        direction === 1 && direction === -1, 
+        "The direction of castling move from: " + 
+        fromField +
+        " to: " +
+        toField + 
+        " produced invalid direction value: " +
+        direction
+      );
+      // rooks new position
+      this.#fields[fromField.col+direction][fromField.row].piece = "rook";
+      this.#fields[fromField.col+direction][fromField.row].color = fromField.color;
+      // remove rook at old position
+      if(direction === 1) {
+        this.#fields[7][fromField.row].piece = null;
+        this.#fields[7][fromField.row].color = null;
+      } else {
+        this.#fields[0][fromField.row].piece = null;
+        this.#fields[0][fromField.row].color = null;
+      }
+      // the kingMoved property is changed later, so no reason to update
+      // rookMoved
     }
 
     // move piece values
@@ -242,10 +333,18 @@ export default class Board {
     fromField.color = null;
     fromField.selected = false;
 
-    // remove all selections
+    // --- alter board status ---
+    // remove all highlights
     this.#removeHighlights();
     // update last move
     this.#lastMove = {fromField: fromField, toField: toField};
+    // update castling checks
+    if(toField.piece === "king") {
+      this.#kingMoved[toField.color] = true;
+    }
+    if(toField.piece === "rook") {
+      this.#rookMoved[fromField.id] = true;
+    }
 
     return 0;
   }
@@ -432,6 +531,58 @@ export default class Board {
   }
 
   /**
+  * Returns the fields where the pawn can capture another piece
+  * (including en passant).
+  *
+  * @param pawn: a field on the board, where the pawn stands
+  *
+  * @returns: an array containing the capture options
+  */
+  #getPawnAttackedSquares(pawn) {
+    const direction = (pawn.color === "white")? 1 : -1;
+    let attacks = [];
+
+    // check for enemy pieces to capture
+    let success = this.#checkMoveOption(pawn.col+1, pawn.row + direction, pawn.color);
+    if(success >= 0) {
+      attacks.push(this.#fields[pawn.col+1][pawn.row + direction]);
+    }
+    success = this.#checkMoveOption(pawn.col-1, pawn.row + direction, pawn.color);
+    if(success >= 0) {
+      attacks.push(this.#fields[pawn.col-1][pawn.row + direction]);
+    }
+
+    return attacks;
+  }
+
+  /**
+  * Returns the fields where the pawn can capture another piece
+  * (including en passant).
+  *
+  * @param pawn: a field on the board, where the pawn stands
+  *
+  * @returns: an array containing the capture options
+  */
+  #getPawnCaptureOptions(pawn) {
+    const enemyColor = (pawn.color === "white")? "black" : "white";
+    const attacks = this.#getPawnAttackedSquares(pawn);
+    let captures = [];
+
+    for(let field of attacks) {
+      if(field.color === enemyColor) {
+        captures.push(field);
+      }
+    }
+    // check for en passant
+    let enPassantMove = this.#getEnPassantMove(pawn);
+    if(enPassantMove !== null) {
+      captures.push(enPassantMove);
+    }
+
+    return captures;
+  }
+
+  /**
   * Returns the fields where the pawn can move.
   *
   * @param pawn: a field on the board, where the pawn stands
@@ -439,8 +590,8 @@ export default class Board {
   * @returns: an array containing the move options
   */
   #getPawnMoveOptions(pawn) {
-    let direction = (pawn.color == "white")? 1 : -1;
-    let isStartPos = (pawn.color == "white" && pawn.row === 1 
+    const direction = (pawn.color == "white")? 1 : -1;
+    const isStartPos = (pawn.color == "white" && pawn.row === 1 
                  || pawn.color == "black" && pawn.row === 6);
 
     let moves = [];
@@ -449,39 +600,72 @@ export default class Board {
       moves.push(this.#fields[pawn.col][pawn.row + direction]);
     }
     // check for starting double jump
-    if(success == 0 && isStartPos) {
+    if(success === 0 && isStartPos) {
       success = this.#checkMoveOption(pawn.col, pawn.row + 2*direction, pawn.color);
       if(success === 0) {
         moves.push(this.#fields[pawn.col][pawn.row + 2*direction]);
       }
     }
-    // check for enemy pieces to capture
-    success = this.#checkMoveOption(pawn.col+1, pawn.row + direction, pawn.color);
-    if(success === 1) {
-      moves.push(this.#fields[pawn.col+1][pawn.row + direction]);
-    }
-    success = this.#checkMoveOption(pawn.col-1, pawn.row + direction, pawn.color);
-    if(success === 1) {
-      moves.push(this.#fields[pawn.col-1][pawn.row + direction]);
-    }
-    // check for en passant
-    let enPassantMove = this.#getEnPassantMove(pawn);
-    if(enPassantMove !== null) {
-      moves.push(enPassantMove);
-    }
+    
+    const captureOptions = this.#getPawnCaptureOptions(pawn);
 
-    return moves;
+    return [...moves, ...captureOptions];
   }
 
   /**
-  * Returns the fields where the king can move.
+  * Returns the fields where the king can castle to
   *
   * @param king: an field on the board, where the king stands
   *
   * @returns: an array containing the move options
   */
-  #getKingMoveOptions(king) {
+  #getCastlingOptions(king) {
+    if(this.#kingMoved[king.color]) {
+      return [];
+    }
     let moves = [];
+
+    // short castling checks
+    let rookId = this.#matrixIdxToNotation(7, king.row);
+    if(
+      this.#fields[5][king.row].piece === null &&
+      this.#fields[6][king.row].piece === null &&
+      !this.#rookMoved[rookId] &&
+      !this.#isFieldAttacked(this.#fields[4][king.row], king.color) &&
+      !this.#isFieldAttacked(this.#fields[5][king.row], king.color) &&
+      !this.#isFieldAttacked(this.#fields[6][king.row], king.color)
+    ) {
+      moves.push(this.#fields[6][king.row]);
+    }
+    // long castling checks
+    rookId = this.#matrixIdxToNotation(0, king.row);
+    if(
+      this.#fields[1][king.row].piece === null &&
+      this.#fields[2][king.row].piece === null &&
+      this.#fields[3][king.row].piece === null &&
+      !this.#rookMoved[rookId] &&
+      !this.#isFieldAttacked(this.#fields[2][king.row], king.color) &&
+      !this.#isFieldAttacked(this.#fields[3][king.row], king.color) &&
+      !this.#isFieldAttacked(this.#fields[4][king.row], king.color)
+    ) {
+      moves.push(this.#fields[2][king.row]);
+    }
+    return moves;
+  }
+
+  /**
+  * Returns the fields where the king can attack. This is separated,
+  * to prevent infinite recursion when looking for castling options.
+  * (The king looking for the other King to attack one of the castling
+  * squares, which in turn looks for his own castling options)
+  *
+  * @param king: an field on the board, where the king stands
+  *
+  * @returns: an array containing the attacking options
+  */
+  #getKingAttackingOptions(king) {
+    let moves = [];
+    // moves in every direction
     for(let horizontalDirection = -1; horizontalDirection<=1; horizontalDirection++) {
       for(let verticalDirection = -1; verticalDirection<=1; verticalDirection++) {
         // don't return the kings own position
@@ -494,6 +678,23 @@ export default class Board {
           moves.push(this.#fields[king.col + horizontalDirection][king.row + verticalDirection])
         }
       }
+    }
+    return moves;
+  }
+
+  /**
+  * Returns the fields where the king can move.
+  *
+  * @param king: an field on the board, where the king stands
+  *
+  * @returns: an array containing the move options
+  */
+  #getKingMoveOptions(king) {
+    let moves = this.#getKingAttackingOptions(king);
+    // castling
+    let castlingMoves = this.#getCastlingOptions(king);
+    for(let move of castlingMoves) {
+      moves.push(move);
     }
 
     return moves;
