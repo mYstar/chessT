@@ -1,6 +1,7 @@
-coverage/*
-css/*
-.git/*
-node_modules/*
+coverage/
+css/
+dist/
+.git/
+node_modules/
 
 package-lock.json
