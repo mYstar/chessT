@@ -1,4 +1,6 @@
 import Board from "./board.js";
+import _ from "lodash";
+import "../sass/index.scss"
 
 /**
  * This function removes the highlighting of the old move
