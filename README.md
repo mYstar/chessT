@@ -15,7 +15,7 @@ As of now the following technologies are used:
 
 1. `git clone https://github.com/mYstar/chessT.git` gets the source code
 2. `npm install` installs all dependencies
-3. `npm run gulp` creates the css from sass
+3. `npm run build` builds the bundle
 4. `npm install -g live-server` installs a local HTTP server to serve the website
 5. `live-server` starts the server
 6. display the website in your browser (`http://127.0.0.1:8080` for live-server with standard settings)

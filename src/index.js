@@ -1,6 +1,7 @@
 import Board from "./board.js";
-import _ from "lodash";
-import "../sass/index.scss"
+import "../sass/index.scss";
+import selMove from "../img/sel-move.svg";
+import {pieces} from "./pieces.js";
 
 /**
  * This function removes the highlighting of the old move
@@ -29,7 +30,7 @@ var selectMove = function(moveList, moveNumber, playerColor) {
 
   var slot = document.createElement("img");
   slot.id = "sel-move";
-  slot.src = "./img/sel-move.svg";
+  slot.src = selMove;
   slot.alt = "seleced move";
 
   if(playerColor === "white") {
@@ -78,19 +79,14 @@ let changeFieldInHtml = function(
 
   // add new piece if present
   if(piece != undefined && color != undefined) {
-    field.innerHTML += '<img class="'
-    + piece 
-    + ' '
-    + color
-    + '" src="./img/'
-    + piece 
-    + '_'
-    + color
-    +'.svg" alt="'
-    + piece 
-    + ' '
-    + color
-    + '" />';
+    const newPiece = new Image();
+    newPiece.src = pieces[color][piece];
+    newPiece.alt = piece + " " + color;
+
+    if(field.lastChild.tagName === "img")
+      field.lastChild.replaceWith(newPiece);
+    else
+      field.appendChild(newPiece);
   }
 
   // perform selection
