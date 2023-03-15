@@ -16,6 +16,7 @@
     border-right: 2px solid $highlight_100;
 
     > img {
+      content: url("../img/comment_bg_white.png");
       position: absolute;
       top: 16px;
       left: 50%;
@@ -30,10 +31,11 @@
 
     padding: 0.6em;
 
-    > .writer {
+    .writer {
       font-weight: 700;
 
       > .avatar {
+        content: url("../img/avatar.svg");
         vertical-align: text-bottom;
       }
     }

@@ -834,4 +834,3 @@ export default class Board {
     return changes;
   }
 }
-

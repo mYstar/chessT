@@ -87,6 +87,7 @@
       top: 50%;
       transform: translateY(-45%);
       z-index: 1;
+      content: url('../img/comment_small_left.png');
     }
   }
 
@@ -105,6 +106,7 @@
 
     .comment-small {
       right: 0.7em;
+      content: url('../img/comment_small_right.png');
     }
   }
 
