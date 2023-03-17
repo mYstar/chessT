@@ -1,7 +1,21 @@
+#square {
+  position: relative;
+  width: 100%;
+  justify-self: start;
+  align-self: start;
+
+  &::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+  }
+}
+
 #board {
   grid-area: board;
 
   display: grid;
+  position: absolute;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   justify-self: center;

@@ -29,7 +29,7 @@ const game_data = {
 const game = document.getElementById('game');
 game.innerHTML = templates.game(game_data);
 
-const board = document.getElementById('board');
+const board = document.getElementById('square');
 board.innerHTML = templates.board();
 
 const comments = document.getElementById('comments');
