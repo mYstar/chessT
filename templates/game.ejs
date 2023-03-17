@@ -1,62 +1,20 @@
 <div id="title">
-    Game: <br>
-    Kasparov, G. (2812) vs. <br>
-    Topalov, V. (2700)
+    Game: <br> <%- player_1 %> vs.<br> <%- player_2 %>
 </div>
 <div class="move-gradient" id="gradient-left"></div>
 <div class="move-gradient" id="gradient-right"></div>
 <div id="moves">
-    <div class="move-number">1.</div>
-    <div class="move-white"><span>e4</span></div>
-    <div class="move-black"><span>d6</span></div>
-    <div class="move-number">2.</div>
-    <div class="move-white"><span>d4</span></div>
-    <div class="move-black"><span>Nf6</span></div>
-    <div class="move-number">3.</div>
-    <div class="move-white"><span>Nc3</span></div>
-    <div class="move-black"><span>g6</span></div>
-    <div class="move-number">4.</div>
-    <div class="move-white">
-        <img class="comment-small" src="" alt="comment">
-        <span>Be3</span>
-    </div>
-    <div class="move-black">
-        <span>Bg7</span>
-    </div>
-    <div class="move-number">5.</div>
-    <div class="move-white">
-        <img class="comment-small" src="" alt="comment"/>
-        <span>Qd2</span>
-    </div>
-    <div class="move-black">
-        <span>c6</span>
-        <img class="comment-small" src="" alt="comment"/>
-    </div>
-    <div class="move-number">6.</div>
-    <div class="move-white"><span>f3</span></div>
-    <div class="move-black"><span>b5</span></div>
-    <div class="move-number">7.</div>
-    <div class="move-white"><span>Nge2</span></div>
-    <div class="move-black"><span>Nbd7</span></div>
-    <div class="move-number">8.</div>
-    <div class="move-white"><span>Bh6</span></div>
-    <div class="move-black">
-        <span>Bxh6</span>
-        <img class="comment-small" src="" alt="comment"/>
-    </div>
-    <div class="move-number">9.</div>
-    <div class="move-white"><span>Qxh6</span></div>
-    <div class="move-black"><span>Bb7</span></div>
-    <div class="move-number">10.</div>
-    <div class="move-white"><span>a3</span></div>
-    <div class="move-black"><span>e5</span></div>
-    <div class="move-number">11.</div>
-    <div class="move-white">
-        <img class="comment-small" src="" alt="comment"/>
-        <span>O-O-O</span>
-    </div>
-    <div class="move-black"><span>Qe7</span></div>
-    <div class="move-number">12.</div>
-    <div class="move-white"><span>Kb1</span></div>
-    <div class="move-black"><span>a6</span></div>
+    <% for(let idx = 0; idx < moves.length;idx++) { %>
+        <div class="move-number"><%= idx + 1 %>.</div>
+        <div class="move-white"><span><%= moves[idx].white %></span>
+            <% if(moves[idx].white_comment.length > 0) { %>
+                <img class="comment-small" src="" alt="comment" title="<%= moves[idx].white_comment %>"/>
+            <% } %>
+        </div>
+        <div class="move-black"><span><%= moves[idx].black %></span>
+            <% if(moves[idx].black_comment.length > 0) { %>
+                <img class="comment-small" src="" alt="comment" title="<%= moves[idx].black_comment %>"/>
+            <% } %>
+        </div>
+    <% } %>
 </div>
